@@ -1,10 +1,9 @@
-HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consola de Sensibilidad Avanzada - Limtek 2026</title>
+    <title>Consola de Sensibilidad Detallada - Limtek 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -24,25 +23,25 @@ HTML
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Ajuste de scroll general */
         body { 
             font-family: 'Open Sans', sans-serif; 
             background-color: #f1f5f9; 
             color: var(--dark); 
-            padding: 20px; 
+            padding: 15px; 
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
         .container { 
-            max-width: 100%; 
+            width: 100%;
             margin: 0 auto; 
             background: white; 
             border-radius: 16px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         header { 
@@ -50,25 +49,24 @@ HTML
             color: white; 
             padding: 20px 30px; 
             border-bottom: 6px solid var(--secondary); 
-            position: relative; 
             flex-shrink: 0;
         }
         header h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; margin-bottom: 5px; }
         header p { color: #cbd5e1; font-size: 12px; }
 
-        /* CONTENEDOR CON SCROLL HORIZONTAL */
+        /* SCROLL HORIZONTAL */
         .scenarios-wrapper {
             width: 100%;
-            overflow-x: auto; /* Activa la barra de desplazamiento horizontal */
+            overflow-x: auto;
             padding: 20px;
             background: #f8fafc;
         }
 
         .scenarios-grid { 
             display: grid; 
-            grid-template-columns: repeat(3, minmax(400px, 1fr)); /* Protege el ancho de las columnas */
+            grid-template-columns: repeat(3, minmax(430px, 1fr)); 
             gap: 20px; 
-            min-width: 1250px; /* Asegura que el scroll aparezca en pantallas pequeñas */
+            min-width: 1350px;
         }
 
         .scenario-column { 
@@ -79,12 +77,12 @@ HTML
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .scenario-column.sc-1 { border-top: 6px solid var(--danger); }
         .scenario-column.sc-2 { border-top: 6px solid var(--warning); }
         .scenario-column.sc-3 { border-top: 6px solid var(--success); }
 
+        /* KPI BANNER */
         .kpi-banner { color: white; padding: 15px; border-radius: 10px; text-align: center; }
         .sc-1 .kpi-banner { background: linear-gradient(135deg, #b91c1c, #ef4444); }
         .sc-2 .kpi-banner { background: linear-gradient(135deg, #d97706, #f59e0b); }
@@ -95,6 +93,7 @@ HTML
 
         .section-title { font-family: 'Montserrat', sans-serif; font-size: 10px; color: var(--primary); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; font-weight: 700; }
         
+        /* TABLA */
         .matrix-table { width: 100%; border-collapse: collapse; }
         .matrix-table th { font-family: 'Montserrat', sans-serif; font-size: 8px; color: #64748b; text-transform: uppercase; padding: 6px 2px; }
         .matrix-table td { padding: 4px 2px; }
@@ -103,7 +102,13 @@ HTML
         input[type="number"], select { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; text-align: center; }
         .highlight-input { background-color: #fffbeb !important; border: 1px solid var(--warning) !important; color: #b45309 !important; }
 
-        .chart-wrapper { background: white; padding: 10px; border-radius: 10px; border: 1px solid var(--border); height: 220px; position: relative; }
+        /* GRÁFICOS */
+        .chart-wrapper { background: white; padding: 10px; border-radius: 10px; border: 1px solid var(--border); height: 200px; position: relative; }
+
+        /* VARIABLES DE INGENIERÍA */
+        .engineering-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .eng-box { display: flex; flex-direction: column; gap: 3px; }
+        .eng-box label { font-size: 8px; color: #64748b; font-weight: 700; text-transform: uppercase; }
 
         .summary-card { background: var(--light); border-radius: 8px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 4px; }
         .summary-line { display: flex; justify-content: space-between; }
@@ -111,19 +116,18 @@ HTML
         .footer-actions { padding: 20px; text-align: center; border-top: 1px solid var(--border); }
         .btn-reset { padding: 10px 25px; background: var(--dark); color: white; border: none; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
 
-        /* Personalización de la barra de scroll para que se vea moderna */
-        .scenarios-wrapper::-webkit-scrollbar { height: 10px; }
-        .scenarios-wrapper::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        .scenarios-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .scenarios-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* BARRA DE SCROLL */
+        .scenarios-wrapper::-webkit-scrollbar { height: 12px; }
+        .scenarios-wrapper::-webkit-scrollbar-track { background: #f1f5f9; }
+        .scenarios-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Consola de Sensibilidad Multiescenario - Limtek 2026</h1>
-        <p>Use la barra de desplazamiento inferior si no visualiza los tres escenarios en su pantalla.</p>
+        <h1>Consola Gerencial de Simulación Paralela v6.0</h1>
+        <p>Ajuste individual de variables de Traslado e Ingeniería de Tiempos (A3, A4, A5) por escenario.</p>
     </header>
 
     <div class="scenarios-wrapper">
@@ -132,18 +136,19 @@ HTML
             <div class="scenario-column sc-1">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:16px; color:var(--primary);">ESCENARIO 1: ACTUAL</h2>
-                    <p style="font-size:10px; color:#64748b;">Línea base (PPT Original)</p>
+                    <p style="font-size:10px; color:#64748b;">Línea base (100% Cobertura)</p>
                 </div>
                 <div class="kpi-banner">
-                    <span class="label">FTE Requerido</span>
+                    <span class="label">Supervisores Necesarios</span>
                     <div class="value" id="s1-res-sup">18</div>
                     <span class="label" id="s1-res-util">218% Utilización</span>
                 </div>
-                <div class="section-title">Sensibilidad (Inspecciones vs FTE)</div>
+                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
                 <div class="chart-wrapper"><canvas id="chart-dual-s1"></canvas></div>
-                <div class="section-title">Configuración de Cartera</div>
+                
+                <div class="section-title">1. Configuración de Cartera y Frecuencia</div>
                 <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th style="width:20%;">Sedes</th><th style="width:25%; color:#b45309;">% Visita</th><th style="width:20%;">Frec.</th></tr></thead>
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
                         <tr><td>Grandes</td><td><input type="number" id="s1-u-cg" value="263" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cg" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cg" value="4" oninput="calculate(1)"></td></tr>
                         <tr><td>Medianos</td><td><input type="number" id="s1-u-cm" value="34" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cm" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cm" value="2" oninput="calculate(1)"></td></tr>
@@ -151,9 +156,21 @@ HTML
                         <tr><td>Menores</td><td><input type="number" id="s1-u-cmi" value="15" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cmi" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cmi" value="0.5" oninput="calculate(1)"></td></tr>
                     </tbody>
                 </table>
+
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="engineering-grid">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s1-t-a3" value="95" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s1-t-a4" value="45" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s1-t-a5" value="10" oninput="calculate(1)"></div>
+                </div>
+                <div class="engineering-grid" style="margin-top: 5px;">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Traslado Mensual (min)</label><input type="number" id="s1-p-traslado" value="3275" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>% Loss</label><select id="s1-p-loss" onchange="calculate(1)"><option value="0.15" selected>15%</option><option value="0">0%</option></select></div>
+                </div>
+
                 <div class="summary-card">
-                    <div class="summary-line"><span>Carga Mensual:</span><strong id="s1-card-load">0</strong></div>
-                    <div class="summary-line"><span>Inspecciones/Mes:</span><strong id="s1-card-visits">0</strong></div>
+                    <div class="summary-line"><span>Carga Laboral:</span><strong id="s1-card-load">0</strong></div>
+                    <div class="summary-line"><span>Visitas / Mes:</span><strong id="s1-card-visits">0</strong></div>
                 </div>
             </div>
 
@@ -163,15 +180,16 @@ HTML
                     <p style="font-size:10px; color:#64748b;">Optimización de frecuencias</p>
                 </div>
                 <div class="kpi-banner">
-                    <span class="label">FTE Requerido</span>
+                    <span class="label">Supervisores Necesarios</span>
                     <div class="value" id="s2-res-sup">11</div>
                     <span class="label" id="s2-res-util">134% Utilización</span>
                 </div>
-                <div class="section-title">Sensibilidad (Inspecciones vs FTE)</div>
+                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
                 <div class="chart-wrapper"><canvas id="chart-dual-s2"></canvas></div>
-                <div class="section-title">Configuración de Cartera</div>
+                
+                <div class="section-title">1. Configuración de Cartera y Frecuencia</div>
                 <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th style="width:20%;">Sedes</th><th style="width:25%; color:#b45309;">% Visita</th><th style="width:20%;">Frec.</th></tr></thead>
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
                         <tr><td>Grandes</td><td><input type="number" id="s2-u-cg" value="263" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cg" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cg" value="4" oninput="calculate(2)"></td></tr>
                         <tr><td>Medianos</td><td><input type="number" id="s2-u-cm" value="34" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cm" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cm" value="1" oninput="calculate(2)"></td></tr>
@@ -179,9 +197,21 @@ HTML
                         <tr><td>Menores</td><td><input type="number" id="s2-u-cmi" value="15" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cmi" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cmi" value="0.25" oninput="calculate(2)"></td></tr>
                     </tbody>
                 </table>
+
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="engineering-grid">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s2-t-a3" value="95" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s2-t-a4" value="45" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s2-t-a5" value="10" oninput="calculate(2)"></div>
+                </div>
+                <div class="engineering-grid" style="margin-top: 5px;">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Traslado Mensual (min)</label><input type="number" id="s2-p-traslado" value="3275" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>% Loss</label><select id="s2-p-loss" onchange="calculate(2)"><option value="0.15" selected>15%</option><option value="0">0%</option></select></div>
+                </div>
+
                 <div class="summary-card">
-                    <div class="summary-line"><span>Carga Mensual:</span><strong id="s2-card-load">0</strong></div>
-                    <div class="summary-line"><span>Inspecciones/Mes:</span><strong id="s2-card-visits">0</strong></div>
+                    <div class="summary-line"><span>Carga Laboral:</span><strong id="s2-card-load">0</strong></div>
+                    <div class="summary-line"><span>Visitas / Mes:</span><strong id="s2-card-visits">0</strong></div>
                 </div>
             </div>
 
@@ -191,15 +221,16 @@ HTML
                     <p style="font-size:10px; color:#64748b;">Modelo 50% Cobertura Grandes</p>
                 </div>
                 <div class="kpi-banner">
-                    <span class="label">FTE Requerido</span>
+                    <span class="label">Supervisores Necesarios</span>
                     <div class="value" id="s3-res-sup">9</div>
                     <span class="label" id="s3-res-util">112% Utilización</span>
                 </div>
-                <div class="section-title">Sensibilidad (Inspecciones vs FTE)</div>
+                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
                 <div class="chart-wrapper"><canvas id="chart-dual-s3"></canvas></div>
-                <div class="section-title">Configuración de Cartera</div>
+                
+                <div class="section-title">1. Configuración de Cartera y Frecuencia</div>
                 <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th style="width:20%;">Sedes</th><th style="width:25%; color:#b45309;">% Visita</th><th style="width:20%;">Frec.</th></tr></thead>
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
                         <tr><td>Grandes</td><td><input type="number" id="s3-u-cg" value="263" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cg" value="50" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cg" value="4" oninput="calculate(3)"></td></tr>
                         <tr><td>Medianos</td><td><input type="number" id="s3-u-cm" value="34" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cm" value="100" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cm" value="2" oninput="calculate(3)"></td></tr>
@@ -207,9 +238,21 @@ HTML
                         <tr><td>Menores</td><td><input type="number" id="s3-u-cmi" value="15" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cmi" value="100" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cmi" value="0.5" oninput="calculate(3)"></td></tr>
                     </tbody>
                 </table>
+
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="engineering-grid">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s3-t-a3" value="95" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s3-t-a4" value="45" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s3-t-a5" value="10" oninput="calculate(3)"></div>
+                </div>
+                <div class="engineering-grid" style="margin-top: 5px;">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Traslado Mensual (min)</label><input type="number" id="s3-p-traslado" value="3275" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>% Loss</label><select id="s3-p-loss" onchange="calculate(3)"><option value="0.15" selected>15%</option><option value="0">0%</option></select></div>
+                </div>
+
                 <div class="summary-card">
-                    <div class="summary-line"><span>Carga Mensual:</span><strong id="s3-card-load">0</strong></div>
-                    <div class="summary-line"><span>Inspecciones/Mes:</span><strong id="s3-card-visits">0</strong></div>
+                    <div class="summary-line"><span>Carga Laboral:</span><strong id="s3-card-load">0</strong></div>
+                    <div class="summary-line"><span>Visitas / Mes:</span><strong id="s3-card-visits">0</strong></div>
                 </div>
             </div>
 
@@ -217,7 +260,7 @@ HTML
     </div>
 
     <div class="footer-actions">
-        <button class="btn-reset" onclick="window.location.reload()">Restablecer Consola</button>
+        <button class="btn-reset" onclick="window.location.reload()">Restablecer Todo</button>
     </div>
 </div>
 
@@ -232,16 +275,16 @@ HTML
                 data: {
                     labels: ['G', 'M', 'P', 'm'],
                     datasets: [
-                        { label: 'Inspecc.', data: [0, 0, 0, 0], backgroundColor: '#002D72', yAxisID: 'y-ins', order: 2 },
-                        { label: 'FTE', data: [0, 0, 0, 0], borderColor: '#ef4444', backgroundColor: '#ef4444', type: 'line', yAxisID: 'y-fte', order: 1, borderWidth: 2 }
+                        { label: 'Inspecc.', data: [0, 0, 0, 0], backgroundColor: '#002D72', yAxisID: 'y-ins', order: 2, borderRadius: 4 },
+                        { label: 'FTE', data: [0, 0, 0, 0], borderColor: '#ef4444', backgroundColor: '#ef4444', type: 'line', yAxisID: 'y-fte', order: 1, borderWidth: 3, pointRadius: 3 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        'y-ins': { type: 'linear', position: 'left', ticks: { font: { size: 8 } } },
-                        'y-fte': { type: 'linear', position: 'right', ticks: { font: { size: 8 } }, grid: { drawOnChartArea: false } }
+                        'y-ins': { type: 'linear', position: 'left', ticks: { font: { size: 8 } }, title: { display: true, text: 'Visitas', font: { size: 8 } } },
+                        'y-fte': { type: 'linear', position: 'right', ticks: { font: { size: 8 } }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Sup.', font: { size: 8 } } }
                     }
                 }
             });
@@ -249,6 +292,7 @@ HTML
     }
 
     function calculate(id) {
+        // Variables de Cartera
         const uCg = parseFloat(document.getElementById(`s${id}-u-cg`).value) || 0;
         const uCm = parseFloat(document.getElementById(`s${id}-u-cm`).value) || 0;
         const uCp = parseFloat(document.getElementById(`s${id}-u-cp`).value) || 0;
@@ -264,25 +308,44 @@ HTML
         const fCp = parseFloat(document.getElementById(`s${id}-f-cp`).value) || 0;
         const fCmi = parseFloat(document.getElementById(`s${id}-f-cmi`).value) || 0;
 
+        // Variables de Ingeniería y Traslado
+        const tA3 = parseFloat(document.getElementById(`s${id}-t-a3`).value) || 0;
+        const tA4 = parseFloat(document.getElementById(`s${id}-t-a4`).value) || 0;
+        const tA5 = parseFloat(document.getElementById(`s${id}-t-a5`).value) || 0;
+        const tiempoPorVisita = tA3 + tA4 + tA5;
+
+        const pTraslado = parseFloat(document.getElementById(`s${id}-p-traslado`).value) || 0;
+        const pLoss = parseFloat(document.getElementById(`s${id}-p-loss`).value) || 0;
+
+        // Cálculo de visitas por segmento
         const insCg = Math.round(uCg * (cCg / 100)) * fCg;
         const insCm = Math.round(uCm * (cCm / 100)) * fCm;
         const insCp = Math.round(uCp * (cCp / 100)) * fCp;
         const insCmi = Math.round(uCmi * (cCmi / 100)) * fCmi;
 
         const totalVisits = insCg + insCm + insCp + insCmi;
-        const totalMin = (totalVisits * 150) + 2970 + 220 + 360 + 3275;
-        const capEff = (60 * 8 * 26) * 0.85;
+        
+        // Carga Mensual Total: (Visitas * Tiempo x Visita) + Carga Fija Estructural (3550 min) + Traslados
+        const cargaFijaLimtek = 2970 + 220 + 360; 
+        const totalMin = (totalVisits * tiempoPorVisita) + cargaFijaLimtek + pTraslado;
+        
+        // Capacidad Efectiva Individual
+        const capEff = (60 * 8 * 26) * (1 - pLoss);
 
+        // FTE e Utilización
         const fte = capEff > 0 ? totalMin / capEff : 0;
         const util = (capEff * 8) > 0 ? (totalMin / (capEff * 8)) * 100 : 0;
 
+        // Actualización Interfaz
         document.getElementById(`s${id}-res-sup`).innerText = Math.ceil(fte);
         document.getElementById(`s${id}-res-util`).innerText = Math.round(util) + "% Utilización";
         document.getElementById(`s${id}-card-load`).innerText = Math.round(totalMin).toLocaleString() + " min";
         document.getElementById(`s${id}-card-visits`).innerText = Math.round(totalVisits).toLocaleString();
 
+        // Actualización Gráfico Dual
         if (dualCharts[id]) {
             dualCharts[id].data.datasets[0].data = [insCg, insCm, insCp, insCmi];
+            // La línea FTE se mantiene constante en el nivel de requerimiento del escenario
             dualCharts[id].data.datasets[1].data = [fte.toFixed(1), fte.toFixed(1), fte.toFixed(1), fte.toFixed(1)];
             dualCharts[id].update();
         }
