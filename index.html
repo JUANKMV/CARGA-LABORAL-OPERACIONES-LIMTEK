@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consola de Capacidad Operativa - Limtek La Libertad v14.0</title>
+    <title>Consola de Control de Carga Laboral v15.0 - Limtek 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -70,14 +70,17 @@
         .btn-calc-scenario:hover { background-color: #001a4d; }
         .footer-actions { padding: 15px; text-align: center; border-top: 1px solid var(--border); background: white; }
         .btn-reset { padding: 10px 25px; background: var(--dark); color: white; border: none; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .scenarios-wrapper::-webkit-scrollbar { height: 12px; }
+        .scenarios-wrapper::-webkit-scrollbar-track { background: #f1f5f9; }
+        .scenarios-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Consola Operativa v14.0 - Región La Libertad (Indexada por Día)</h1>
-        <p>Los parámetros administrativos y de traslado se ingresan por DÍA, tal como figuran en tus cuadros de Excel.</p>
+        <h1>Consola de Control de Carga Laboral Corporativa v15.0</h1>
+        <p>Entorno analítico multiescenario. Los parámetros de traslado y administración se ingresan en base diaria.</p>
     </header>
 
     <div class="scenarios-wrapper">
@@ -85,8 +88,8 @@
             
             <div class="scenario-column sc-1">
                 <div style="text-align: center;">
-                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 1: ACTUAL (LA LIBERTAD)</h2>
-                    <p style="font-size:9px; color:#64748b;">Frecuencias Actuales (Mix 2-1-1-0)</p>
+                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 1: ACTUAL</h2>
+                    <p style="font-size:9px; color:#64748b;">Frecuencias de Visita Base (Mix 2-1-1-0)</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s1-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -100,7 +103,7 @@
                     <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s1-util-admin">--%</strong></div>
                     <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s1-card-load">0 min</strong></div>
                 </div>
-                <div class="section-title">1. Cartera Operativa Real (La Libertad)</div>
+                <div class="section-title">1. Cartera Operativa Regional</div>
                 <table class="matrix-table">
                     <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
@@ -110,25 +113,25 @@
                         <tr><td>Menores (Cm)</td><td><input type="number" id="s1-u-cmi" value="2"></td><td><input type="number" id="s1-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s1-f-cmi" value="0"></td></tr>
                     </tbody>
                 </table>
-                <div class="section-title">2. Ingeniería de Tiempos del Excel (min)</div>
+                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s1-t-a3" value="80"></div>
                     <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s1-t-a4" value="40"></div>
                     <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s1-t-a5" value="10"></div>
                 </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Estimado por DÍA (min)</label><input type="number" id="s1-p-t-v" value="144.7" class="highlight-input"></div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s1-p-t-v" value="144.7" class="highlight-input"></div>
                 
-                <div class="section-title">3. Carga Administrativa por DÍA (Excel)</div>
+                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s1-a-daily" value="153.2" class="admin-input"></div>
                     <div class="eng-box"><label>Capacitación</label><input type="number" id="s1-a-cap" value="12" class="admin-input"></div>
                     <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s1-a-new" value="90" class="admin-input"></div>
                 </div>
-                <div class="section-title">4. Calendario</div>
+                <div class="section-title">4. Calendario Comercial 2026</div>
                 <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo 2026</label>
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
                         <select id="s1-mes" onchange="updateMonthDays(1)">
-                            <option value="4" selected>Mayo (25 días hábiles)</option><option value="6">Julio (25 días hábiles)</option><option value="11">Diciembre (23 días hábiles)</option>
+                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
                         </select>
                     </div>
                     <div class="eng-box"><label>Días Netos</label><input type="number" id="s1-p-dias" value="25" readonly></div>
@@ -139,7 +142,7 @@
             <div class="scenario-column sc-2">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 2: REFUERZO</h2>
-                    <p style="font-size:9px; color:#64748b;">Frecuencias Reducidas (Mix 2-1-0.5-0)</p>
+                    <p style="font-size:9px; color:#64748b;">Optimización de Frecuencias (Mix 2-1-0.5-0)</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s2-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -153,7 +156,7 @@
                     <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s2-util-admin">--%</strong></div>
                     <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s2-card-load">0 min</strong></div>
                 </div>
-                <div class="section-title">1. Cartera Operativa Real (La Libertad)</div>
+                <div class="section-title">1. Cartera Operativa Regional</div>
                 <table class="matrix-table">
                     <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
@@ -163,25 +166,25 @@
                         <tr><td>Menores (Cm)</td><td><input type="number" id="s2-u-cmi" value="2"></td><td><input type="number" id="s2-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s2-f-cmi" value="0"></td></tr>
                     </tbody>
                 </table>
-                <div class="section-title">2. Ingeniería de Tiempos del Excel (min)</div>
+                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s2-t-a3" value="80"></div>
                     <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s2-t-a4" value="40"></div>
                     <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s2-t-a5" value="10"></div>
                 </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Estimado por DÍA (min)</label><input type="number" id="s2-p-t-v" value="144.7" class="highlight-input"></div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s2-p-t-v" value="144.7" class="highlight-input"></div>
                 
-                <div class="section-title">3. Carga Administrativa por DÍA (Excel)</div>
+                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s2-a-daily" value="153.2" class="admin-input"></div>
                     <div class="eng-box"><label>Capacitación</label><input type="number" id="s2-a-cap" value="12" class="admin-input"></div>
                     <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s2-a-new" value="90" class="admin-input"></div>
                 </div>
-                <div class="section-title">4. Calendario</div>
+                <div class="section-title">4. Calendario Comercial 2026</div>
                 <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo 2026</label>
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
                         <select id="s2-mes" onchange="updateMonthDays(2)">
-                            <option value="4" selected>Mayo (25 días hábiles)</option><option value="6">Julio (25 días hábiles)</option><option value="11">Diciembre (23 días hábiles)</option>
+                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
                         </select>
                     </div>
                     <div class="eng-box"><label>Días Netos</label><input type="number" id="s2-p-dias" value="25" readonly></div>
@@ -192,7 +195,7 @@
             <div class="scenario-column sc-3">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 3: EXPANSIÓN</h2>
-                    <p style="font-size:9px; color:#64748b;">Filtro de Cobertura de Visitas al 50% en Grandes</p>
+                    <p style="font-size:9px; color:#64748b;">Filtro de Cobertura al 50% en Clientes Grandes</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s3-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -206,7 +209,7 @@
                     <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s3-util-admin">--%</strong></div>
                     <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s3-card-load">0 min</strong></div>
                 </div>
-                <div class="section-title">1. Cartera Operativa Real (La Libertad)</div>
+                <div class="section-title">1. Cartera Operativa Regional</div>
                 <table class="matrix-table">
                     <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
                     <tbody>
@@ -216,25 +219,25 @@
                         <tr><td>Menores (Cm)</td><td><input type="number" id="s3-u-cmi" value="2"></td><td><input type="number" id="s3-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s3-f-cmi" value="0"></td></tr>
                     </tbody>
                 </table>
-                <div class="section-title">2. Ingeniería de Tiempos del Excel (min)</div>
+                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s3-t-a3" value="80"></div>
                     <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s3-t-a4" value="40"></div>
                     <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s3-t-a5" value="10"></div>
                 </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Estimado por DÍA (min)</label><input type="number" id="s3-p-t-v" value="144.7" class="highlight-input"></div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s3-p-t-v" value="144.7" class="highlight-input"></div>
                 
-                <div class="section-title">3. Carga Administrativa por DÍA (Excel)</div>
+                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
                 <div class="grid-3">
                     <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s3-a-daily" value="153.2" class="admin-input"></div>
                     <div class="eng-box"><label>Capacitación</label><input type="number" id="s3-a-cap" value="12" class="admin-input"></div>
                     <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s3-a-new" value="90" class="admin-input"></div>
                 </div>
-                <div class="section-title">4. Calendario</div>
+                <div class="section-title">4. Calendario Comercial 2026</div>
                 <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo 2026</label>
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
                         <select id="s3-mes" onchange="updateMonthDays(3)">
-                            <option value="4" selected>Mayo (25 días hábiles)</option><option value="6">Julio (25 días hábiles)</option><option value="11">Diciembre (23 días hábiles)</option>
+                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
                         </select>
                     </div>
                     <div class="eng-box"><label>Días Netos</label><input type="number" id="s3-p-dias" value="25" readonly></div>
@@ -246,7 +249,7 @@
     </div>
 
     <div class="footer-actions">
-        <button class="btn-reset" onclick="window.location.reload()">Restablecer Consola Regional</button>
+        <button class="btn-reset" onclick="window.location.reload()">Restablecer Consola Corporativa</button>
     </div>
 </div>
 
@@ -283,7 +286,6 @@
         document.getElementById(`s${id}-p-dias`).value = calendarioPeru2026[mesIdx] || 25;
     }
 
-    // El motor lógico ahora mensualiza automáticamente los datos diarios de tu Excel
     function calculate(id) {
         const uCg = parseFloat(document.getElementById(`s${id}-u-cg`).value) || 0;
         const uCm = parseFloat(document.getElementById(`s${id}-u-cm`).value) || 0;
@@ -304,7 +306,6 @@
         const tA4 = parseFloat(document.getElementById(`s${id}-t-a4`).value) || 0;
         const tA5 = parseFloat(document.getElementById(`s${id}-t-a5`).value) || 0;
         
-        // Carga diaria de Traslado e Insumos Fijos del Excel
         const tTravelDaily = parseFloat(document.getElementById(`s${id}-p-t-v`).value) || 0;
         const aDaily = parseFloat(document.getElementById(`s${id}-a-daily`).value) || 0;
         const aCap = parseFloat(document.getElementById(`s${id}-a-cap`).value) || 0;
@@ -325,7 +326,7 @@
         const totalVisits = insCg + insCm + insCp + insCmi;
         const tiempoInspecNeto = tA3 + tA4 + tA5;
         
-        // Conversión y mensualización automática basada en la matriz del Excel corporativo
+        // Conversión matemática automática de Día a Mes
         const minutesVisitsTotal = totalVisits * tiempoInspecNeto;
         const minutosTrasladoMensuales = tTravelDaily * pDias;
         const fixedAdminTotalMensual = (aDaily + aCap + aNew) * pDias;
@@ -333,7 +334,7 @@
         const cargaTotal = minutesVisitsTotal + minutosTrasladoMensuales + fixedAdminTotalMensual;
         
         const capEffInd = (60 * 8 * pDias) * 0.85; 
-        const capEffGrupoActual = capEffInd * 1; 
+        const capEffGrupoActual = capEffInd * 1; // Base de comparación regional: 1 supervisor zonal
 
         const fteRequired = capEffInd > 0 ? cargaTotal / capEffInd : 0;
         const dotacionIdeal = Math.ceil(fteRequired);
