@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consola Corporativa de Control de Carga v16.0 - Limtek</title>
+    <title>Dashboard Corporativo de Carga Operativa - Limtek v17.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,344 +11,327 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #002D72;
-            --secondary: #84BD00;
-            --dark: #334155;
-            --light: #f8fafc;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-            --success: #16a34a;
-            --warning: #f59e0b;
+            --pbi-bg: #f3f2f1;
+            --pbi-blue: #002D72;
+            --pbi-yellow: #f2c811;
+            --pbi-dark: #252423;
+            --pbi-border: #e1dfdd;
+            --danger: #a80000;
+            --danger-bg: #fde7e9;
+            --success: #107c41;
+            --success-bg: #dff6dd;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
             font-family: 'Open Sans', sans-serif; 
-            background-color: #f1f5f9; 
-            color: var(--dark); 
-            padding: 15px; 
+            background-color: var(--pbi-bg); 
+            color: var(--pbi-dark); 
+            padding: 10px; 
             min-height: 100vh;
+        }
+
+        /* POWER BI LAYOUT GRID */
+        .pbi-dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 15px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* FILTROS LATERALES (SLICERS PANEL) */
+        .pbi-slicers {
+            background: white;
+            border: 1px solid var(--pbi-border);
+            border-radius: 4px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        
-        .container { 
-            width: 100%;
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+
+        .slicer-header {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--pbi-blue);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--pbi-bg);
+            padding-bottom: 5px;
+        }
+
+        /* PANEL CENTRAL DE REPORTES */
+        .pbi-content {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-        }
-        
-        header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 20px 30px; 
-            border-bottom: 6px solid var(--secondary); 
-            flex-shrink: 0;
-        }
-        header h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; margin-bottom: 5px; }
-        header p { color: #cbd5e1; font-size: 12px; }
-
-        .scenarios-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            padding: 20px;
-            background: #f8fafc;
+            gap: 15px;
         }
 
-        .scenarios-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, minmax(470px, 1fr)); 
-            gap: 20px; 
-            min-width: 1500px;
-        }
-
-        .scenario-column { 
-            background: white; 
-            border: 1px solid var(--border); 
-            border-radius: 14px; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-        }
-        .scenario-column.sc-1 { border-top: 6px solid var(--danger); }
-        .scenario-column.sc-2 { border-top: 6px solid var(--warning); }
-        .scenario-column.sc-3 { border-top: 6px solid var(--success); }
-
-        .kpi-dual-banner { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .kpi-box { padding: 15px 10px; border-radius: 10px; text-align: center; color: white; }
-        
-        .box-needed { background: var(--primary); }
-        .box-deficit { background: #b91c1c; }
-        .box-deficit.ok { background: var(--success); }
-
-        .kpi-box .val { font-size: 38px; font-weight: 800; font-family: 'Montserrat', sans-serif; line-height: 1; }
-        .kpi-box .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; display: block; opacity: 0.9; }
-
-        .util-tag { text-align: center; font-size: 10px; font-weight: 700; color: #b91c1c; background: #fee2e2; padding: 4px; border-radius: 4px; }
-
-        .section-title { font-family: 'Montserrat', sans-serif; font-size: 10px; color: var(--primary); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; font-weight: 700; margin-top: 5px; }
-        
-        .matrix-table { width: 100%; border-collapse: collapse; }
-        .matrix-table th { font-family: 'Montserrat', sans-serif; font-size: 8px; color: #64748b; text-transform: uppercase; padding: 4px 2px; }
-        .matrix-table td { padding: 3px 2px; }
-        .matrix-table td:first-child { font-size: 11px; font-weight: 600; text-align: left; }
-
-        input[type="number"], select { width: 100%; padding: 5px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; text-align: center; }
-        .highlight-input { background-color: #fffbeb !important; border: 1px solid var(--warning) !important; color: #b45309 !important; }
-        .admin-input { background-color: #f0fdf4 !important; border: 1px solid var(--success) !important; color: #166534 !important; }
-        input[readonly] { background-color: #f1f5f9; color: #475569; cursor: not-allowed; }
-
-        .chart-wrapper { background: white; padding: 10px; border-radius: 10px; border: 1px solid var(--border); height: 160px; position: relative; }
-
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .eng-box { display: flex; flex-direction: column; gap: 2px; }
-        .eng-box label { font-size: 8px; color: #64748b; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-
-        .summary-card { background: var(--light); border-radius: 8px; padding: 10px; font-size: 10px; display: flex; flex-direction: column; gap: 3px; border: 1px solid var(--border); }
-        .summary-line { display: flex; justify-content: space-between; align-items: center; }
-        .summary-line.bold { font-weight: 700; border-top: 1px dashed #cbd5e1; margin-top: 3px; padding-top: 3px; }
-
-        .btn-calc-scenario { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            transition: background 0.3s;
-            margin-top: 10px;
+        /* CABECERA PRINCIPAL */
+        .pbi-header {
+            background: var(--pbi-blue);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+        }
+        .pbi-header h1 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700; }
+        .pbi-header p { font-size: 11px; color: #cbd5e1; }
+
+        /* ESCENARIOS GRID */
+        .scenarios-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        /* TARJETAS DE ESCENARIO TIPO POWER BI */
+        .pbi-card-visual {
+            background: white;
+            border: 1px solid var(--pbi-border);
+            border-top: 4px solid var(--pbi-blue);
+            border-radius: 4px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .pbi-card-visual.sc-1 { border-top-color: var(--danger); }
+        .pbi-card-visual.sc-2 { border-top-color: var(--pbi-yellow); }
+        .pbi-card-visual.sc-3 { border-top-color: var(--success); }
+
+        .scenario-title {
+            text-align: center;
+        }
+        .scenario-title h2 { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: var(--pbi-blue); }
+        .scenario-title p { font-size: 10px; color: #64748b; }
+
+        /* KPI TILES DE POWER BI */
+        .pbi-kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        .btn-calc-scenario:hover { background-color: #001a4d; }
-        .footer-actions { padding: 15px; text-align: center; border-top: 1px solid var(--border); background: white; }
-        .btn-reset { padding: 10px 25px; background: var(--dark); color: white; border: none; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .pbi-tile {
+            background: var(--pbi-bg);
+            border: 1px solid var(--pbi-border);
+            border-radius: 4px;
+            padding: 10px 5px;
+            text-align: center;
+        }
+        .pbi-tile .num { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: var(--pbi-blue); line-height: 1; }
+        .pbi-tile .lbl { font-size: 9px; font-weight: 600; color: #64748b; margin-top: 4px; text-transform: uppercase; }
+        
+        .pbi-tile.alert { background: var(--danger-bg); border-color: #f1c4c4; }
+        .pbi-tile.alert .num { color: var(--danger); }
+        .pbi-tile.safe { background: var(--success-bg); border-color: #cbebc9; }
+        .pbi-tile.safe .num { color: var(--success); }
+
+        /* INTERFAZ DE ENTRADA Y TABLAS */
+        .section-label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; color: var(--pbi-dark); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--pbi-border); padding-bottom: 2px; margin-top: 5px; }
+
+        .pbi-table { width: 100%; border-collapse: collapse; }
+        .pbi-table th { font-family: 'Montserrat', sans-serif; font-size: 8px; color: #64748b; text-transform: uppercase; padding: 4px 2px; text-align: center; background: var(--pbi-bg); }
+        .pbi-table td { padding: 3px 2px; text-align: center; }
+        .pbi-table td:first-child { font-size: 10px; font-weight: 600; text-align: left; }
+
+        input[type="number"], select { width: 100%; padding: 4px; border: 1px solid var(--pbi-border); border-radius: 2px; font-family: inherit; font-size: 11px; font-weight: 600; text-align: center; background: #fff; }
+        input[type="number"]:focus { border-color: var(--pbi-blue); outline: none; }
+        .yellow-in { background-color: #fffbeb !important; border-color: #f59e0b !important; }
+        .green-in { background-color: #f0fdf4 !important; border-color: var(--success) !important; }
+
+        .pbi-btn { width: 100%; padding: 10px; background: var(--pbi-blue); color: white; border: none; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; margin-top: 5px; }
+        .pbi-btn:hover { background: #001f52; }
+
+        /* RESPONSIVE SCROLL PROTECTION */
+        @media (max-width: 1400px) {
+            .pbi-dashboard { grid-template-columns: 1fr; }
+            .scenarios-wrapper { overflow-x: auto; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Consola Corporativa de Control de Carga Laboral v16.0</h1>
-        <p>Modelo predictivo multidimensional calibrado al 100% con los desgloses de tiempos por día del Excel de Operaciones.</p>
-    </header>
-
-    <div class="scenarios-wrapper">
-        <div class="scenarios-grid">
-            
-            <div class="scenario-column sc-1">
-                <div style="text-align: center;">
-                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 1: ACTUAL</h2>
-                    <p style="font-size:9px; color:#64748b;">Frecuencias de Visita Totales (Mix 4-3-2-1)</p>
-                </div>
-                <div class="kpi-dual-banner">
-                    <div class="kpi-box box-needed"><div class="val" id="s1-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
-                    <div class="kpi-box box-deficit" id="s1-deficit-box"><div class="val" id="s1-res-deficit">--</div><span class="lbl">Déficit Brecha<br>(Base: 8 Sup)</span></div>
-                </div>
-                <div class="util-tag" id="s1-tag-util">--% Utilización Total</div>
-                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
-                <div class="chart-wrapper"><canvas id="chart-dual-s1"></canvas></div>
-                <div class="summary-card">
-                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa (Campo):</span><strong id="s1-util-op">--%</strong></div>
-                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s1-util-admin">--%</strong></div>
-                    <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s1-card-load">0 min</strong></div>
-                </div>
-                <div class="section-title">1. Cartera Operativa Consolidada</div>
-                <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
-                    <tbody>
-                        <tr><td>Grandes (CG)</td><td><input type="number" id="s1-u-cg" value="260"></td><td><input type="number" id="s1-c-cg" value="100" class="highlight-input"></td><td><input type="number" id="s1-f-cg" value="4"></td></tr>
-                        <tr><td>Medianos (CM)</td><td><input type="number" id="s1-u-cm" value="40"></td><td><input type="number" id="s1-c-cm" value="100" class="highlight-input"></td><td><input type="number" id="s1-f-cm" value="3"></td></tr>
-                        <tr><td>Pequeños (CP)</td><td><input type="number" id="s1-u-cp" value="79"></td><td><input type="number" id="s1-c-cp" value="100" class="highlight-input"></td><td><input type="number" id="s1-f-cp" value="2"></td></tr>
-                        <tr><td>Menores (Cm)</td><td><input type="number" id="s1-u-cmi" value="16"></td><td><input type="number" id="s1-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s1-f-cmi" value="1"></td></tr>
-                    </tbody>
-                </table>
-                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s1-t-a3" value="80"></div>
-                    <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s1-t-a4" value="40"></div>
-                    <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s1-t-a5" value="8"></div>
-                </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s1-p-t-v" value="144.7" class="highlight-input"></div>
-                
-                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s1-a-daily" value="153.2" class="admin-input"></div>
-                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s1-a-cap" value="12" class="admin-input"></div>
-                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s1-a-new" value="90" class="admin-input"></div>
-                </div>
-                <div class="section-title">4. Calendario Comercial 2026</div>
-                <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
-                        <select id="s1-mes" onchange="updateMonthDays(1)">
-                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
-                        </select>
-                    </div>
-                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s1-p-dias" value="25" readonly></div>
-                </div>
-                <button class="btn-calc-scenario" onclick="calculate(1)"><i class="fa-solid fa-calculator"></i> Calcular Escenario 1</button>
-            </div>
-
-            <div class="scenario-column sc-2">
-                <div style="text-align: center;">
-                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 2: REFUERZO</h2>
-                    <p style="font-size:9px; color:#64748b;">Optimización de Frecuencias (Mix 4-2-1-0.5)</p>
-                </div>
-                <div class="kpi-dual-banner">
-                    <div class="kpi-box box-needed"><div class="val" id="s2-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
-                    <div class="kpi-box box-deficit" id="s2-deficit-box"><div class="val" id="s2-res-deficit">--</div><span class="lbl">Déficit Brecha<br>(Base: 8 Sup)</span></div>
-                </div>
-                <div class="util-tag" id="s2-tag-util">--% Utilización Total</div>
-                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
-                <div class="chart-wrapper"><canvas id="chart-dual-s2"></canvas></div>
-                <div class="summary-card">
-                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa (Campo):</span><strong id="s2-util-op">--%</strong></div>
-                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s2-util-admin">--%</strong></div>
-                    <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s2-card-load">0 min</strong></div>
-                </div>
-                <div class="section-title">1. Cartera Operativa Consolidada</div>
-                <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
-                    <tbody>
-                        <tr><td>Grandes (CG)</td><td><input type="number" id="s2-u-cg" value="260"></td><td><input type="number" id="s2-c-cg" value="100" class="highlight-input"></td><td><input type="number" id="s2-f-cg" value="4"></td></tr>
-                        <tr><td>Medianos (CM)</td><td><input type="number" id="s2-u-cm" value="40"></td><td><input type="number" id="s2-c-cm" value="100" class="highlight-input"></td><td><input type="number" id="s2-f-cm" value="2"></td></tr>
-                        <tr><td>Pequeños (CP)</td><td><input type="number" id="s2-u-cp" value="79"></td><td><input type="number" id="s2-c-cp" value="100" class="highlight-input"></td><td><input type="number" id="s2-f-cp" value="1"></td></tr>
-                        <tr><td>Menores (Cm)</td><td><input type="number" id="s2-u-cmi" value="16"></td><td><input type="number" id="s2-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s2-f-cmi" value="0.5"></td></tr>
-                    </tbody>
-                </table>
-                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s2-t-a3" value="80"></div>
-                    <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s2-t-a4" value="40"></div>
-                    <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s2-t-a5" value="8"></div>
-                </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s2-p-t-v" value="144.7" class="highlight-input"></div>
-                
-                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s2-a-daily" value="153.2" class="admin-input"></div>
-                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s2-a-cap" value="12" class="admin-input"></div>
-                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s2-a-new" value="90" class="admin-input"></div>
-                </div>
-                <div class="section-title">4. Calendario Comercial 2026</div>
-                <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
-                        <select id="s2-mes" onchange="updateMonthDays(2)">
-                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
-                        </select>
-                    </div>
-                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s2-p-dias" value="25" readonly></div>
-                </div>
-                <button class="btn-calc-scenario" onclick="calculate(2)"><i class="fa-solid fa-calculator"></i> Calcular Escenario 2</button>
-            </div>
-
-            <div class="scenario-column sc-3">
-                <div style="text-align: center;">
-                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 3: EXPANSIÓN</h2>
-                    <p style="font-size:9px; color:#64748b;">Filtro de Cobertura de Visitas al 50% en Grandes</p>
-                </div>
-                <div class="kpi-dual-banner">
-                    <div class="kpi-box box-needed"><div class="val" id="s3-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
-                    <div class="kpi-box box-deficit" id="s3-deficit-box"><div class="val" id="s3-res-deficit">--</div><span class="lbl">Déficit Brecha<br>(Base: 8 Sup)</span></div>
-                </div>
-                <div class="util-tag" id="s3-tag-util">--% Utilización Total</div>
-                <div class="section-title">Análisis de Sensibilidad (Visitas vs FTE)</div>
-                <div class="chart-wrapper"><canvas id="chart-dual-s3"></canvas></div>
-                <div class="summary-card">
-                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa (Campo):</span><strong id="s3-util-op">--%</strong></div>
-                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa (Fija):</span><strong id="s3-util-admin">--%</strong></div>
-                    <div class="summary-line bold"><span>Carga Total del Frente:</span><strong id="s3-card-load">0 min</strong></div>
-                </div>
-                <div class="section-title">1. Cartera Operativa Consolidada</div>
-                <table class="matrix-table">
-                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
-                    <tbody>
-                        <tr><td>Grandes (CG)</td><td><input type="number" id="s3-u-cg" value="260"></td><td><input type="number" id="s3-c-cg" value="50" class="highlight-input"></td><td><input type="number" id="s3-f-cg" value="4"></td></tr>
-                        <tr><td>Medianos (CM)</td><td><input type="number" id="s3-u-cm" value="40"></td><td><input type="number" id="s3-c-cm" value="100" class="highlight-input"></td><td><input type="number" id="s3-f-cm" value="3"></td></tr>
-                        <tr><td>Pequeños (CP)</td><td><input type="number" id="s3-u-cp" value="79"></td><td><input type="number" id="s3-c-cp" value="100" class="highlight-input"></td><td><input type="number" id="s3-f-cp" value="2"></td></tr>
-                        <tr><td>Menores (Cm)</td><td><input type="number" id="s3-u-cmi" value="16"></td><td><input type="number" id="s3-c-cmi" value="100" class="highlight-input"></td><td><input type="number" id="s3-f-cmi" value="1"></td></tr>
-                    </tbody>
-                </table>
-                <div class="section-title">2. Ingeniería de Tiempos en Sede (min)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>A3 (Inspec Sede)</label><input type="number" id="s3-t-a3" value="80"></div>
-                    <div class="eng-box"><label>A4 (Reunión Cli)</label><input type="number" id="s3-t-a4" value="40"></div>
-                    <div class="eng-box"><label>A5 (Charla 5M)</label><input type="number" id="s3-t-a5" value="8"></div>
-                </div>
-                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s3-p-t-v" value="144.7" class="highlight-input"></div>
-                
-                <div class="section-title">3. Carga Administrativa por DÍA (min/día)</div>
-                <div class="grid-3">
-                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s3-a-daily" value="153.2" class="admin-input"></div>
-                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s3-a-cap" value="12" class="admin-input"></div>
-                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s3-a-new" value="90" class="admin-input"></div>
-                </div>
-                <div class="section-title">4. Calendario Comercial 2026</div>
-                <div class="grid-3">
-                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
-                        <select id="s3-mes" onchange="updateMonthDays(3)">
-                            <option value="4" selected>Mayo (25 días)</option><option value="6">Julio (25 días)</option><option value="11">Diciembre (23 días)</option>
-                        </select>
-                    </div>
-                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s3-p-dias" value="25" readonly></div>
-                </div>
-                <button class="btn-calc-scenario" onclick="calculate(3)"><i class="fa-solid fa-calculator"></i> Calcular Escenario 3</button>
-            </div>
-
+<div class="pbi-dashboard">
+    
+    <div class="pbi-slicers">
+        <div style="text-align: center; padding-bottom: 10px;">
+            <img src="https://img.icons8.com/color/48/000000/power-bi.png" alt="PBI Logo" style="vertical-align: middle;">
+            <span style="font-family:'Montserrat'; font-weight:800; font-size:14px; color:var(--pbi-dark); margin-left:5px;">Power BI View</span>
         </div>
+
+        <div class="slicer-header"><i class="fa-solid fa-filter"></i> Filtro de Región</div>
+        <select id="global-region" onchange="applyRegionPreset()">
+            <option value="consolidado">CONSOLIDADO PAÍS</option>
+            <option value="libertad">LA LIBERTAD</option>
+            <option value="lambayeque">LAMBAYEQUE</option>
+            <option value="piura">PIURA</option>
+            <option value="centro">CENTRO ORIENTE</option>
+        </select>
+
+        <div class="slicer-header"><i class="fa-solid fa-calendar-days"></i> Periodo Comercial</div>
+        <select id="global-month" onchange="syncMonths()">
+            <option value="4" selected>Mayo 2026 (25 días)</option>
+            <option value="6">Julio 2026 (25 días)</option>
+            <option value="11">Diciembre 2026 (23 días)</option>
+        </select>
+
+        <div class="slicer-header"><i class="fa-solid fa-circle-info"></i> Notas del Modelo</div>
+        <p style="font-size: 11px; color: #64748b; line-height: 1.5; text-align: justify;">
+            Este reporte calcula de forma paralela la utilización laboral basándose en una capacidad efectiva neta de 8 horas diarias menos el 15% de factor no productivo corporativo.
+        </p>
     </div>
 
-    <div class="footer-actions">
-        <button class="btn-reset" onclick="window.location.reload()">Restablecer Consola Corporativa</button>
+    <div class="pbi-content">
+        <div class="pbi-header">
+            <div>
+                <h1>Dashboard de Planificación y Carga de Fuerza de Ventas / Supervisión</h1>
+                <p>Análisis interactivo de brechas de dotación y asignación de tiempos base contractuales vs reales.</p>
+            </div>
+            <div style="font-family:'Montserrat'; font-weight:700; font-size:16px; opacity:0.3; letter-spacing:2px;">LIMTEK</div>
+        </div>
+
+        <div class="scenarios-wrapper">
+            <div class="scenarios-grid">
+                
+                <script>
+                    const layout = [
+                        { id: 1, type: "sc-1", name: "ESCENARIO 1: COBERTURA TOTAL", desc: "Cartera consolidada al 100% frecuencia pura" },
+                        { id: 2, type: "sc-2", name: "ESCENARIO 2: EFICIENTE", desc: "Optimización de frecuencias intermedias" },
+                        { id: 3, type: "sc-3", name: "ESCENARIO 3: EXPANSIÓN", desc: "Filtro estratégico al 50% de Grandes" }
+                    ];
+
+                    layout.forEach(sc => {
+                        document.write(`
+                            <div class="pbi-card-visual ${sc.type}">
+                                <div class="scenario-title">
+                                    <h2>${sc.name}</h2>
+                                    <p>${sc.desc}</p>
+                                </div>
+
+                                <div class="pbi-kpi-row">
+                                    <div class="pbi-tile">
+                                        <div class="num" id="s${sc.id}-res-sup">--</div>
+                                        <div class="lbl">Sup. Necesarios</div>
+                                    </div>
+                                    <div class="pbi-tile alert" id="s${sc.id}-deficit-tile">
+                                        <div class="num" id="s${sc.id}-res-deficit">--</div>
+                                        <div class="lbl">Brecha / Déficit</div>
+                                    </div>
+                                </div>
+                                <div class="util-tag" id="s${sc.id}-tag-util">--% Utilización Total</div>
+
+                                <div class="section-label">Gráfico Analítico Cruzado</div>
+                                <div class="chart-wrapper"><canvas id="chart-pbi-s${sc.id}"></canvas></div>
+
+                                <div class="section-label">Distribución de Utilización</div>
+                                <div class="summary-card">
+                                    <div class="summary-line" style="color:var(--primary);"><span><i class="fa-solid fa-route"></i> Frente de Campo (Op):</span><strong id="s${sc.id}-util-op">--%</strong></div>
+                                    <div class="summary-line" style="color:#64748b;"><span><i class="fa-solid fa-briefcase"></i> Frente de Gestión (Admin):</span><strong id="s${sc.id}-util-admin">--%</strong></div>
+                                    <div class="summary-line bold"><span>Carga Total Acumulada:</span><strong id="s${sc.id}-card-load">0 min</strong></div>
+                                </div>
+
+                                <div class="section-label">1. Cartera Operativa Regional</div>
+                                <table class="pbi-table">
+                                    <thead><tr><th>Segmento</th><th style="width:18%;">Sedes</th><th style="width:25%; color:#b45309;">% Visita</th><th style="width:20%;">Frec.</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>Grandes (CG)</td><td><input type="number" id="s${sc.id}-u-cg" value="260" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cg" value="${sc.id===3?50:100}" class="yellow-in" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cg" value="4" oninput="calculate(${sc.id})"></td></tr>
+                                        <tr><td>Medianos (CM)</td><td><input type="number" id="s${sc.id}-u-cm" value="40" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cm" value="100" class="yellow-in" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cm" value="${sc.id===2?2:3}" oninput="calculate(${sc.id})"></td></tr>
+                                        <tr><td>Pequeños (CP)</td><td><input type="number" id="s${sc.id}-u-cp" value="79" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cp" value="${sc.id===3?75:100}" class="yellow-in" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cp" value="${sc.id===2?1:2}" oninput="calculate(${sc.id})"></td></tr>
+                                        <tr><td>Menores (Cm)</td><td><input type="number" id="s${sc.id}-u-cmi" value="16" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cmi" value="100" class="yellow-in" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cmi" value="${sc.id===2?0.5:1}" oninput="calculate(${sc.id})"></td></tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="section-label">2. Ingeniería de Tiempos e Inspección (min)</div>
+                                <div class="grid-3">
+                                    <div class="eng-box"><label>A3 Inspec.</label><input type="number" id="s${sc.id}-t-a3" value="80" oninput="calculate(${sc.id})"></div>
+                                    <div class="eng-box"><label>A4 Reunión</label><input type="number" id="s${sc.id}-t-a4" value="40" oninput="calculate(${sc.id})"></div>
+                                    <div class="eng-box"><label>A5 Charla</label><input type="number" id="s${sc.id}-t-a5" value="8" oninput="calculate(${sc.id})"></div>
+                                </div>
+                                <div class="eng-box" style="margin-top:4px;"><label style="color:#b45309;">A6. Traslado Promedio por DÍA (min/día)</label><input type="number" id="s${sc.id}-p-t-v" value="144.7" class="yellow-in" oninput="calculate(${sc.id})"></div>
+
+                                <div class="section-label">3. Tareas Administrativas por DÍA (min/día)</div>
+                                <div class="grid-3">
+                                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s${sc.id}-a-daily" value="153.2" class="green-in" oninput="calculate(${sc.id})"></div>
+                                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s${sc.id}-a-cap" value="12" class="green-in" oninput="calculate(${sc.id})"></div>
+                                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s${sc.id}-a-new" value="90" class="green-in" oninput="calculate(${sc.id})"></div>
+                                </div>
+                                <input type="hidden" id="s${sc.id}-p-dias" value="25">
+                                <button class="pbi-btn" onclick="calculate(${sc.id})">Calcular Visual</button>
+                            </div>
+                        `);
+                    });
+                </script>
+
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    const dualCharts = {};
-    const calendarioPeru2026 = { 4: 25, 6: 25, 11: 23 };
+    const pbiCharts = {};
 
-    function initDualCharts() {
+    function initPbiCharts() {
         for(let idx = 1; idx <= 3; idx++){
-            const ctx = document.getElementById(`chart-dual-s${idx}`).getContext('2d');
-            dualCharts[idx] = new Chart(ctx, {
+            const ctx = document.getElementById(`chart-pbi-s${idx}`).getContext('2d');
+            pbiCharts[idx] = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['CG', 'CM', 'CP', 'Cm'],
                     datasets: [
-                        { label: 'Visitas / Mes', data: [0,0,0,0], backgroundColor: '#002D72', yAxisID: 'y-ins', order: 2, borderRadius: 4 },
-                        { label: 'FTE Req.', data: [0,0,0,0], borderColor: '#ef4444', backgroundColor: '#ef4444', type: 'line', yAxisID: 'y-fte', order: 1, borderWidth: 3 }
+                        { label: 'Visitas / Mes', data: [0,0,0,0], backgroundColor: '#002D72', yAxisID: 'y-ins', order: 2, borderRadius: 2 },
+                        { label: 'FTE Req', data: [0,0,0,0], borderColor: '#a80000', backgroundColor: '#a80000', type: 'line', yAxisID: 'y-fte', order: 1, borderWidth: 2, pointRadius: 2 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        'y-ins': { type: 'linear', position: 'left', ticks: { font: { size: 8 } } },
-                        'y-fte': { type: 'linear', position: 'right', ticks: { font: { size: 8 } }, grid: { drawOnChartArea: false } }
+                        'y-ins': { type: 'linear', position: 'left', ticks: { font: { size: 7 } } },
+                        'y-fte': { type: 'linear', position: 'right', ticks: { font: { size: 7 } }, grid: { drawOnChartArea: false } }
                     }
                 }
             });
         }
     }
 
-    function updateMonthDays(id) {
-        const mesIdx = parseInt(document.getElementById(`s${id}-mes`).value);
-        document.getElementById(`s${id}-p-dias`).value = calendarioPeru2026[mesIdx] || 25;
+    function applyRegionPreset() {
+        const region = document.getElementById('global-region').value;
+        
+        // Estructuras de datos nativas extraídas de cada pestaña de tu archivo de Excel
+        const presets = {
+            consolidado: { cg: 260, cm: 40, cp: 79, cmi: 16, sup: 8, t_v: 144.7, adm: 153.2 },
+            libertad: { cg: 15, cm: 6, cp: 11, cmi: 2, sup: 1, t_v: 144.7, adm: 153.2 },
+            lambayeque: { cg: 20, cm: 10, cp: 15, cmi: 4, sup: 1, t_v: 120.5, adm: 140.0 },
+            piura: { cg: 25, cm: 8, cp: 12, cmi: 5, sup: 1, t_v: 165.0, adm: 160.4 },
+            centro: { cg: 18, cm: 12, cp: 20, cmi: 3, sup: 1, t_v: 110.2, adm: 135.0 }
+        };
+
+        const selection = presets[region] || presets.consolidado;
+
+        for(let i = 1; i <= 3; i++) {
+            document.getElementById(`s${i}-u-cg`).value = selection.cg;
+            document.getElementById(`s${i}-u-cm`).value = selection.cm;
+            document.getElementById(`s${i}-u-cp`).value = selection.cp;
+            document.getElementById(`s${i}-u-cmi`).value = selection.cmi;
+            document.getElementById(`s${i}-p-t-v`).value = selection.t_v;
+            document.getElementById(`s${i}-a-daily`).value = selection.adm;
+            calculate(i);
+        }
+    }
+
+    function syncMonths() {
+        const selectedDays = document.getElementById('global-month').value;
+        for(let i = 1; i <= 3; i++) {
+            document.getElementById(`s${i}-p-dias`).value = selectedDays;
+            calculate(i);
+        }
     }
 
     function calculate(id) {
@@ -375,8 +358,11 @@
         const aDaily = parseFloat(document.getElementById(`s${id}-a-daily`).value) || 0;
         const aCap = parseFloat(document.getElementById(`s${id}-a-cap`).value) || 0;
         const aNew = parseFloat(document.getElementById(`s${id}-a-new`).value) || 0;
-        
         const pDias = parseFloat(document.getElementById(`s${id}-p-dias`).value) || 25;
+
+        // Base de comparación de supervisores actuales (8 si es consolidado, 1 si es regional)
+        const regionType = document.getElementById('global-region').value;
+        const baseSupervisores = (regionType === 'consolidado') ? 8 : 1;
 
         const visCg = Math.round(uCg * (cCg / 100));
         const visCm = Math.round(uCm * (cCm / 100));
@@ -391,40 +377,46 @@
         const totalVisits = insCg + insCm + insCp + insCmi;
         const tiempoInspecNeto = tA3 + tA4 + tA5;
         
-        // Conversión matemática de Día a Mes para simulación predictiva
+        // Mensualización exacta indexada por días del mes (Lógica de tu Excel)
         const minutesVisitsTotal = totalVisits * tiempoInspecNeto;
         const minutosTrasladoMensuales = tTravelDaily * pDias;
         const fixedAdminTotalMensual = (aDaily + aCap + aNew) * pDias;
         
         const cargaTotal = minutesVisitsTotal + minutosTrasladoMensuales + fixedAdminTotalMensual;
         
-        const capEffInd = (60 * 8 * pDias) * 0.85; 
-        const capEffGrupoActual = capEffInd * 8; // Plantilla fija país de 8 supervisores
+        const capEffInd = (60 * 8 * pDias) * 0.85; // 15% inasistencia / pérdida productiva
+        const capEffGrupoActual = capEffInd * baseSupervisores;
 
         const fteRequired = capEffInd > 0 ? cargaTotal / capEffInd : 0;
         const dotacionIdeal = Math.ceil(fteRequired);
-        const brecha = dotacionIdeal - 8; 
+        const brecha = dotacionIdeal - baseSupervisores;
 
+        // Renderizado de KPIs analíticos
         document.getElementById(`s${id}-res-sup`).innerText = dotacionIdeal;
         const resDef = document.getElementById(`s${id}-res-deficit`);
-        const boxDef = document.getElementById(`s${id}-deficit-box`);
+        const tileDef = document.getElementById(`s${id}-deficit-tile`);
+        
         resDef.innerText = (brecha > 0 ? "+" : "") + brecha;
-        if(brecha <= 0) boxDef.classList.add('ok'); else boxDef.classList.remove('ok');
+        if(brecha <= 0) {
+            tileDef.className = "pbi-tile safe";
+        } else {
+            tileDef.className = "pbi-tile alert";
+        }
 
-        document.getElementById(`s${id}-tag-util`).innerText = Math.round(capEffGrupoActual > 0 ? (cargaTotal / capEffGrupoActual)*100 : 0) + "% Utilización Total";
+        document.getElementById(`s${id}-tag-util`).innerText = Math.round(capEffGrupoActual > 0 ? (cargaTotal / capEffGrupoActual)*100 : 0) + "% Utilización del Pool";
         document.getElementById(`s${id}-util-op`).innerText = Math.round(capEffGrupoActual > 0 ? ((minutesVisitsTotal + minutosTrasladoMensuales) / capEffGrupoActual)*100 : 0) + "%";
         document.getElementById(`s${id}-util-admin`).innerText = Math.round(capEffGrupoActual > 0 ? (fixedAdminTotalMensual / capEffGrupoActual)*100 : 0) + "%";
         document.getElementById(`s${id}-card-load`).innerText = Math.round(cargaTotal).toLocaleString() + " min";
 
-        if (dualCharts[id]) {
-            dualCharts[id].data.datasets[0].data = [insCg, insCm, insCp, insCmi];
-            dualCharts[id].data.datasets[1].data = [fteRequired.toFixed(1), fteRequired.toFixed(1), fteRequired.toFixed(1), fteRequired.toFixed(1)];
-            dualCharts[id].update();
+        if (pbiCharts[id]) {
+            pbiCharts[id].data.datasets[0].data = [insCg, insCm, insCp, insCmi];
+            pbiCharts[id].data.datasets[1].data = [fteRequired.toFixed(1), fteRequired.toFixed(1), fteRequired.toFixed(1), fteRequired.toFixed(1)];
+            pbiCharts[id].update();
         }
     }
 
     window.onload = function() {
-        initDualCharts();
+        initPbiCharts();
         calculate(1); calculate(2); calculate(3);
     };
 </script>
