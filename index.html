@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consola de Capacidad Operativa - Limtek La Libertad</title>
+    <title>Consola de Capacidad Operativa - Limtek La Libertad v13.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -68,8 +68,10 @@
 
         .btn-calc-scenario { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
         .btn-calc-scenario:hover { background-color: #001a4d; }
+        
         .footer-actions { padding: 15px; text-align: center; border-top: 1px solid var(--border); background: white; }
         .btn-reset { padding: 10px 25px; background: var(--dark); color: white; border: none; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        
         .scenarios-wrapper::-webkit-scrollbar { height: 12px; }
         .scenarios-wrapper::-webkit-scrollbar-track { background: #f1f5f9; }
         .scenarios-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f1f5f9; }
@@ -79,8 +81,8 @@
 
 <div class="container">
     <header>
-        <h1>Consola de Control de Carga Laboral v12.0 - Región La Libertad</h1>
-        <p>Modelo calibrado según los parámetros de tiempos estándar del Excel Corporativo (130 min netos por visita).</p>
+        <h1>Consola de Control de Carga Laboral v13.0 - Región La Libertad</h1>
+        <p>Modelo multiescenario en paralelo calibrado con los parámetros de tiempos estándar de tu Excel corporativo (130 min).</p>
     </header>
 
     <div class="scenarios-wrapper">
@@ -89,7 +91,7 @@
             <div class="scenario-column sc-1">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 1: ACTUAL (LA LIBERTAD)</h2>
-                    <p style="font-size:9px; color:#64748b;">Estructura de Frecuencias Actuales (Mix 4-2-1-0.5)</p>
+                    <p style="font-size:9px; color:#64748b;">Estructura de Frecuencias Actuales (Mix 2-1-1-0)</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s1-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -135,13 +137,13 @@
                     </div>
                     <div class="eng-box"><label>Días Netos</label><input type="number" id="s1-p-dias" value="25" readonly></div>
                 </div>
-                <button class="btn-calc-scenario" onclick="calculate(1)"><i class="fa-solid fa-dark fa-calculator"></i> Calcular Escenario Actual</button>
+                <button class="btn-calc-scenario" onclick="calculate(1)"><i class="fa-solid fa-calculator"></i> Calcular Escenario 1</button>
             </div>
 
             <div class="scenario-column sc-2">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 2: REFUERZO</h2>
-                    <p style="font-size:9px; color:#64748b;">Frecuencias de Contingencia Reducidas</p>
+                    <p style="font-size:9px; color:#64748b;">Frecuencias de Contingencia Reducidas (Mix 2-1-0.5-0)</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s2-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -193,7 +195,7 @@
             <div class="scenario-column sc-3">
                 <div style="text-align: center;">
                     <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 3: EXPANSIÓN</h2>
-                    <p style="font-size:9px; color:#64748b;">Filtro de Cobertura de Visitas al 50%</p>
+                    <p style="font-size:9px; color:#64748b;">Filtro de Cobertura de Visitas al 50% en Grandes</p>
                 </div>
                 <div class="kpi-dual-banner">
                     <div class="kpi-box box-needed"><div class="val" id="s3-res-sup">--</div><span class="lbl">Supervisores<br>Necesarios</span></div>
@@ -309,7 +311,6 @@
         const aNew = parseFloat(document.getElementById(`s${id}-a-new`).value) || 0;
         const pDias = parseFloat(document.getElementById(`s${id}-p-dias`).value) || 25;
 
-        // Regla matemática de redondeo de sedes efectivas según filtro de cobertura
         const visCg = Math.round(uCg * (cCg / 100));
         const visCm = Math.round(uCm * (cCm / 100));
         const visCp = Math.round(uCp * (cCp / 100));
@@ -323,18 +324,16 @@
         const totalVisits = insCg + insCm + insCp + insCmi;
         const tiempoInspecNeto = tA3 + tA4 + tA5;
         
-        // Suma ponderada operativa y administrativa
         const minutesVisitsTotal = totalVisits * (tiempoInspecNeto + tTravelV);
         const fixedAdminTotal = aDaily + aCap + aNew;
         const cargaTotal = minutesVisitsTotal + fixedAdminTotal;
         
-        // Capacidad Efectiva Individual con 15% Pérdida según Excel (10,200 min base)
         const capEffInd = (60 * 8 * pDias) * 0.85; 
-        const capEffGrupoActualDe1Supervisor = capEffInd * 1; // La Libertad cuenta actualmente con 1 supervisor zonal
+        const capEffGrupoActual = capEffInd * 1; 
 
         const fteRequired = capEffInd > 0 ? cargaTotal / capEffInd : 0;
         const dotacionIdeal = Math.ceil(fteRequired);
-        const brecha = dotacionIdeal - 1; // Base regional de 1 supervisor
+        const brecha = dotacionIdeal - 1; 
 
         document.getElementById(`s${id}-res-sup`).innerText = dotacionIdeal;
         const resDef = document.getElementById(`s${id}-res-deficit`);
@@ -342,9 +341,9 @@
         resDef.innerText = (brecha > 0 ? "+" : "") + brecha;
         if(brecha <= 0) boxDef.classList.add('ok'); else boxDef.classList.remove('ok');
 
-        document.getElementById(`s${id}-tag-util`).innerText = Math.round(capEffGrupoActualDe1Supervisor > 0 ? (cargaTotal / capEffGrupoActualDe1Supervisor)*100 : 0) + "% Utilización Zonal";
-        document.getElementById(`s${id}-util-op`).innerText = Math.round(capEffGrupoActualDe1Supervisor > 0 ? (minutesVisitsTotal / capEffGrupoActualDe1Supervisor)*100 : 0) + "%";
-        document.getElementById(`s${id}-util-admin`).innerText = Math.round(capEffGrupoActualDe1Supervisor > 0 ? (fixedAdminTotal / capEffGrupoActualDe1Supervisor)*100 : 0) + "%";
+        document.getElementById(`s${id}-tag-util`).innerText = Math.round(capEffGrupoActual > 0 ? (cargaTotal / capEffGrupoActual)*100 : 0) + "% Utilización Zonal";
+        document.getElementById(`s${id}-util-op`).innerText = Math.round(capEffGrupoActual > 0 ? (minutesVisitsTotal / capEffGrupoActual)*100 : 0) + "%";
+        document.getElementById(`s${id}-util-admin`).innerText = Math.round(capEffGrupoActual > 0 ? (fixedAdminTotal / capEffGrupoActual)*100 : 0) + "%";
         document.getElementById(`s${id}-card-load`).innerText = Math.round(cargaTotal).toLocaleString() + " min";
 
         if (dualCharts[id]) {
