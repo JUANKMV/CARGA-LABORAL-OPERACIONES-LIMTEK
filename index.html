@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consola de Gestión Operativa v9.0 - Limtek 2026</title>
+    <title>Consola de Gestión Operativa v10.0 - Limtek 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -123,90 +123,190 @@
 
 <div class="container">
     <header>
-        <h1>Consola de Control de Carga Laboral v9.0: Transparencia Administrativa</h1>
+        <h1>Consola de Control de Carga Laboral v10.0 - Limtek 2026</h1>
         <p>Desglose total de tiempos operativos, traslados y carga fija de gestión corporativa por escenario.</p>
     </header>
 
     <div class="scenarios-wrapper">
         <div class="scenarios-grid">
             
-            <script>
-                const scenarios = [
-                    { id: 1, name: "ESCENARIO 1: ACTUAL", desc: "Cartera base / 100% Cobertura" },
-                    { id: 2, name: "ESCENARIO 2: REFUERZO", desc: "Optimización de frecuencias" },
-                    { id: 3, name: "ESCENARIO 3: EXPANSIÓN", desc: "Modelo 50% Cobertura Grandes" }
-                ];
+            <div class="scenario-column sc-1">
+                <div style="text-align: center;">
+                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 1: ACTUAL</h2>
+                    <p style="font-size:9px; color:#64748b;">Cartera base / 100% Cobertura</p>
+                </div>
+                <div class="kpi-dual-banner">
+                    <div class="kpi-box box-needed">
+                        <div class="val" id="s1-res-sup">--</div>
+                        <span class="lbl">Supervisores<br>Necesarios</span>
+                    </div>
+                    <div class="kpi-box box-deficit" id="s1-deficit-box">
+                        <div class="val" id="s1-res-deficit">--</div>
+                        <span class="lbl">Déficit Real<br>(Brecha)</span>
+                    </div>
+                </div>
+                <div class="util-tag" id="s1-tag-util">--% Utilización Total</div>
+                <div class="section-title">Análisis de Sensibilidad</div>
+                <div class="chart-wrapper"><canvas id="chart-dual-s1"></canvas></div>
+                <div class="summary-card">
+                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa:</span><strong id="s1-util-op">--%</strong></div>
+                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa:</span><strong id="s1-util-admin">--%</strong></div>
+                    <div class="summary-line bold"><span>Carga Total Mensual:</span><strong id="s1-card-load">0 min</strong></div>
+                </div>
+                <div class="section-title">1. Cartera y Cobertura (Por Defecto)</div>
+                <table class="matrix-table">
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
+                    <tbody>
+                        <tr><td>Grandes</td><td><input type="number" id="s1-u-cg" value="260" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cg" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cg" value="4" oninput="calculate(1)"></td></tr>
+                        <tr><td>Medianos</td><td><input type="number" id="s1-u-cm" value="40" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cm" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cm" value="2" oninput="calculate(1)"></td></tr>
+                        <tr><td>Pequeños</td><td><input type="number" id="s1-u-cp" value="79" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cp" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cp" value="1" oninput="calculate(1)"></td></tr>
+                        <tr><td>Menores</td><td><input type="number" id="s1-u-cmi" value="16" oninput="calculate(1)"></td><td><input type="number" id="s1-c-cmi" value="100" class="highlight-input" oninput="calculate(1)"></td><td><input type="number" id="s1-f-cmi" value="0.5" oninput="calculate(1)"></td></tr>
+                    </tbody>
+                </table>
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s1-t-a3" value="95" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s1-t-a4" value="45" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s1-t-a5" value="10" oninput="calculate(1)"></div>
+                </div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">Traslado por Inspección (min)</label><input type="number" id="s1-p-t-v" value="45" class="highlight-input" oninput="calculate(1)"></div>
+                <div class="section-title">3. Carga Administrativa Fija (Limtek)</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s1-a-daily" value="2970" class="admin-input" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s1-a-cap" value="220" class="admin-input" oninput="calculate(1)"></div>
+                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s1-a-new" value="360" class="admin-input" oninput="calculate(1)"></div>
+                </div>
+                <div class="section-title">4. Calendario 2026</div>
+                <div class="grid-3">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
+                        <select id="s1-mes" onchange="updateMonthDays(1)">
+                            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+                            <option value="4" selected>Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+                            <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s1-p-dias" value="25" readonly></div>
+                </div>
+            </div>
 
-                scenarios.forEach(sc => {
-                    document.write(`
-                        <div class="scenario-column sc-${sc.id}">
-                            <div style="text-align: center;">
-                                <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">${sc.name}</h2>
-                                <p style="font-size:9px; color:#64748b;">${sc.desc}</p>
-                            </div>
+            <div class="scenario-column sc-2">
+                <div style="text-align: center;">
+                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 2: REFUERZO</h2>
+                    <p style="font-size:9px; color:#64748b;">Optimización de frecuencias</p>
+                </div>
+                <div class="kpi-dual-banner">
+                    <div class="kpi-box box-needed">
+                        <div class="val" id="s2-res-sup">--</div>
+                        <span class="lbl">Supervisores<br>Necesarios</span>
+                    </div>
+                    <div class="kpi-box box-deficit" id="s2-deficit-box">
+                        <div class="val" id="s2-res-deficit">--</div>
+                        <span class="lbl">Déficit Real<br>(Brecha)</span>
+                    </div>
+                </div>
+                <div class="util-tag" id="s2-tag-util">--% Utilización Total</div>
+                <div class="section-title">Análisis de Sensibilidad</div>
+                <div class="chart-wrapper"><canvas id="chart-dual-s2"></canvas></div>
+                <div class="summary-card">
+                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa:</span><strong id="s2-util-op">--%</strong></div>
+                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa:</span><strong id="s2-util-admin">--%</strong></div>
+                    <div class="summary-line bold"><span>Carga Total Mensual:</span><strong id="s2-card-load">0 min</strong></div>
+                </div>
+                <div class="section-title">1. Cartera y Cobertura (Por Defecto)</div>
+                <table class="matrix-table">
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
+                    <tbody>
+                        <tr><td>Grandes</td><td><input type="number" id="s2-u-cg" value="260" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cg" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cg" value="4" oninput="calculate(2)"></td></tr>
+                        <tr><td>Medianos</td><td><input type="number" id="s2-u-cm" value="40" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cm" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cm" value="1" oninput="calculate(2)"></td></tr>
+                        <tr><td>Pequeños</td><td><input type="number" id="s2-u-cp" value="79" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cp" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cp" value="0.5" oninput="calculate(2)"></td></tr>
+                        <tr><td>Menores</td><td><input type="number" id="s2-u-cmi" value="16" oninput="calculate(2)"></td><td><input type="number" id="s2-c-cmi" value="100" class="highlight-input" oninput="calculate(2)"></td><td><input type="number" id="s2-f-cmi" value="0.25" oninput="calculate(2)"></td></tr>
+                    </tbody>
+                </table>
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s2-t-a3" value="95" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s2-t-a4" value="45" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s2-t-a5" value="10" oninput="calculate(2)"></div>
+                </div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">Traslado por Inspección (min)</label><input type="number" id="s2-p-t-v" value="45" class="highlight-input" oninput="calculate(2)"></div>
+                <div class="section-title">3. Carga Administrativa Fija (Limtek)</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s2-a-daily" value="2970" class="admin-input" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s2-a-cap" value="220" class="admin-input" oninput="calculate(2)"></div>
+                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s2-a-new" value="360" class="admin-input" oninput="calculate(2)"></div>
+                </div>
+                <div class="section-title">4. Calendario 2026</div>
+                <div class="grid-3">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
+                        <select id="s2-mes" onchange="updateMonthDays(2)">
+                            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+                            <option value="4" selected>Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+                            <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s2-p-dias" value="25" readonly></div>
+                </div>
+            </div>
 
-                            <div class="kpi-dual-banner">
-                                <div class="kpi-box box-needed">
-                                    <div class="val" id="s${sc.id}-res-sup">--</div>
-                                    <span class="lbl">Supervisores<br>Necesarios</span>
-                                </div>
-                                <div class="kpi-box box-deficit" id="s${sc.id}-deficit-box">
-                                    <div class="val" id="s${sc.id}-res-deficit">--</div>
-                                    <span class="lbl">Déficit Real<br>(Brecha)</span>
-                                </div>
-                            </div>
-                            <div class="util-tag" id="s${sc.id}-tag-util">--% Utilización Total</div>
+            <div class="scenario-column sc-3">
+                <div style="text-align: center;">
+                    <h2 style="font-family:'Montserrat'; font-size:14px; color:var(--primary);">ESCENARIO 3: EXPANSIÓN</h2>
+                    <p style="font-size:9px; color:#64748b;">Modelo 50% Cobertura Grandes</p>
+                </div>
+                <div class="kpi-dual-banner">
+                    <div class="kpi-box box-needed">
+                        <div class="val" id="s3-res-sup">--</div>
+                        <span class="lbl">Supervisores<br>Necesarios</span>
+                    </div>
+                    <div class="kpi-box box-deficit" id="s3-deficit-box">
+                        <div class="val" id="s3-res-deficit">--</div>
+                        <span class="lbl">Déficit Real<br>(Brecha)</span>
+                    </div>
+                </div>
+                <div class="util-tag" id="s3-tag-util">--% Utilización Total</div>
+                <div class="section-title">Análisis de Sensibilidad</div>
+                <div class="chart-wrapper"><canvas id="chart-dual-s3"></canvas></div>
+                <div class="summary-card">
+                    <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa:</span><strong id="s3-util-op">--%</strong></div>
+                    <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa:</span><strong id="s3-util-admin">--%</strong></div>
+                    <div class="summary-line bold"><span>Carga Total Mensual:</span><strong id="s3-card-load">0 min</strong></div>
+                </div>
+                <div class="section-title">1. Cartera y Cobertura (Por Defecto)</div>
+                <table class="matrix-table">
+                    <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
+                    <tbody>
+                        <tr><td>Grandes</td><td><input type="number" id="s3-u-cg" value="260" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cg" value="50" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cg" value="4" oninput="calculate(3)"></td></tr>
+                        <tr><td>Medianos</td><td><input type="number" id="s3-u-cm" value="40" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cm" value="100" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cm" value="2" oninput="calculate(3)"></td></tr>
+                        <tr><td>Pequeños</td><td><input type="number" id="s3-u-cp" value="79" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cp" value="75" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cp" value="1" oninput="calculate(3)"></td></tr>
+                        <tr><td>Menores</td><td><input type="number" id="s3-u-cmi" value="16" oninput="calculate(3)"></td><td><input type="number" id="s3-c-cmi" value="100" class="highlight-input" oninput="calculate(3)"></td><td><input type="number" id="s3-f-cmi" value="0.5" oninput="calculate(3)"></td></tr>
+                    </tbody>
+                </table>
+                <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>A3 (min)</label><input type="number" id="s3-t-a3" value="95" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>A4 (min)</label><input type="number" id="s3-t-a4" value="45" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>A5 (min)</label><input type="number" id="s3-t-a5" value="10" oninput="calculate(3)"></div>
+                </div>
+                <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">Traslado por Inspección (min)</label><input type="number" id="s3-p-t-v" value="45" class="highlight-input" oninput="calculate(3)"></div>
+                <div class="section-title">3. Carga Administrativa Fija (Limtek)</div>
+                <div class="grid-3">
+                    <div class="eng-box"><label>Gestión Admin.</label><input type="number" id="s3-a-daily" value="2970" class="admin-input" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>Capacitación</label><input type="number" id="s3-a-cap" value="220" class="admin-input" oninput="calculate(3)"></div>
+                    <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s3-a-new" value="360" class="admin-input" oninput="calculate(3)"></div>
+                </div>
+                <div class="section-title">4. Calendario 2026</div>
+                <div class="grid-3">
+                    <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
+                        <select id="s3-mes" onchange="updateMonthDays(3)">
+                            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+                            <option value="4" selected>Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+                            <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="eng-box"><label>Días Netos</label><input type="number" id="s3-p-dias" value="25" readonly></div>
+                </div>
+            </div>
 
-                            <div class="section-title">Análisis de Sensibilidad</div>
-                            <div class="chart-wrapper"><canvas id="chart-dual-s${sc.id}"></canvas></div>
-                            
-                            <div class="summary-card">
-                                <div class="summary-line" style="color: var(--primary);"><span>Utilización Operativa:</span><strong id="s${sc.id}-util-op">--%</strong></div>
-                                <div class="summary-line" style="color: #64748b;"><span>Utilización Administrativa:</span><strong id="s${sc.id}-util-admin">--%</strong></div>
-                                <div class="summary-line bold"><span>Carga Total Mensual:</span><strong id="s${sc.id}-card-load">0 min</strong></div>
-                            </div>
-
-                            <div class="section-title">1. Cartera y Cobertura (Por Defecto)</div>
-                            <table class="matrix-table">
-                                <thead><tr><th>Tipo</th><th>Sedes</th><th style="color:#b45309;">% Visita</th><th>Frec.</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Grandes</td><td><input type="number" id="s${sc.id}-u-cg" value="260" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cg" value="${sc.id===3?50:100}" class="highlight-input" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cg" value="4" oninput="calculate(${sc.id})"></td></tr>
-                                    <tr><td>Medianos</td><td><input type="number" id="s${sc.id}-u-cm" value="40" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cm" value="100" class="highlight-input" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cm" value="${sc.id===2?1:2}" oninput="calculate(${sc.id})"></td></tr>
-                                    <tr><td>Pequeños</td><td><input type="number" id="s${sc.id}-u-cp" value="79" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cp" value="${sc.id===3?75:100}" class="highlight-input" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cp" value="${sc.id===2?0.5:1}" oninput="calculate(${sc.id})"></td></tr>
-                                    <tr><td>Menores</td><td><input type="number" id="s${sc.id}-u-cmi" value="16" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-c-cmi" value="100" class="highlight-input" oninput="calculate(${sc.id})"></td><td><input type="number" id="s${sc.id}-f-cmi" value="${sc.id===2?0.25:0.5}" oninput="calculate(${sc.id})"></td></tr>
-                                </tbody>
-                            </table>
-
-                            <div class="section-title">2. Ingeniería de Tiempos y Traslado</div>
-                            <div class="grid-3">
-                                <div class="eng-box"><label>A3 (min)</label><input type="number" id="s${sc.id}-t-a3" value="95" oninput="calculate(${sc.id})"></div>
-                                <div class="eng-box"><label>A4 (min)</label><input type="number" id="s${sc.id}-t-a4" value="45" oninput="calculate(${sc.id})"></div>
-                                <div class="eng-box"><label>A5 (min)</label><input type="number" id="s${sc.id}-t-a5" value="10" oninput="calculate(${sc.id})"></div>
-                            </div>
-                            <div class="eng-box" style="margin-top:5px;"><label style="color:#b45309;">Traslado por Inspección (min)</label><input type="number" id="s${sc.id}-p-t-v" value="45" class="highlight-input" oninput="calculate(${sc.id})"></div>
-
-                            <div class="section-title">3. Carga Administrativa Fija (Limtek)</div>
-                            <div class="grid-3">
-                                <div class="eng-box"><label>Gestión Diaria</label><input type="number" id="s${sc.id}-a-daily" value="2970" class="admin-input" oninput="calculate(${sc.id})"></div>
-                                <div class="eng-box"><label>Capacitación</label><input type="number" id="s${sc.id}-a-cap" value="220" class="admin-input" oninput="calculate(${sc.id})"></div>
-                                <div class="eng-box"><label>Nuevos Cli.</label><input type="number" id="s${sc.id}-a-new" value="360" class="admin-input" oninput="calculate(${sc.id})"></div>
-                            </div>
-
-                            <div class="section-title">4. Calendario 2026</div>
-                            <div class="grid-3">
-                                <div class="eng-box" style="grid-column: span 2;"><label>Mes Operativo</label>
-                                    <select id="s${sc.id}-mes" onchange="updateMonthDays(${sc.id})">
-                                        <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
-                                        <option value="4" selected>Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
-                                        <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
-                                    </select>
-                                </div>
-                                <div class="eng-box"><label>Días Netos</label><input type="number" id="s${sc.id}-p-dias" value="25" readonly></div>
-                            </div>
-                        </div>
-                    `);
-                });
-            </script>
         </div>
     </div>
 
@@ -264,7 +364,7 @@
         const cCmi = parseFloat(document.getElementById(`s${id}-c-cmi`).value) || 0;
 
         const fCg = parseFloat(document.getElementById(`s${id}-f-cg`).value) || 0;
-        const fCm = parseFloat(document.getElementById!(`s${id}-f-cm`).value) || 0;
+        const fCm = parseFloat(document.getElementById(`s${id}-f-cm`).value) || 0;
         const fCp = parseFloat(document.getElementById(`s${id}-f-cp`).value) || 0;
         const fCmi = parseFloat(document.getElementById(`s${id}-f-cmi`).value) || 0;
 
@@ -289,7 +389,7 @@
         const fixedAdminTotal = aDaily + aCap + aNew;
         const cargaTotal = minutesVisits + fixedAdminTotal;
         
-        const capEffInd = (60 * 8 * pDias) * 0.85; // 15% pérdida fija operativa
+        const capEffInd = (60 * 8 * pDias) * 0.85; 
         const capEffGrupo8 = capEffInd * 8;
 
         const fteRequired = capEffInd > 0 ? cargaTotal / capEffInd : 0;
