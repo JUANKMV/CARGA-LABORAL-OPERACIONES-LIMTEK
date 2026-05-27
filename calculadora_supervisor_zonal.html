@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Operativa — Supervisor Zonal LIMTEK</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --navy:#0d1b2a;--navy2:#1a2d42;--navy3:#243b55;--panel:#eef1f6;--white:#fff;
+  --amber:#d4900a;--amber-lt:#fef6e4;--amber-dk:#7a5200;--amber-bd:#f0c060;
+  --blue:#1760b8;--blue-lt:#e6f0fb;--blue-dk:#0c3d80;--blue-bd:#7ab0e8;
+  --green:#167a40;--green-lt:#e4f5ec;--green-dk:#0b4a25;--green-bd:#6dca98;
+  --red:#b83215;--red-lt:#fde8e4;
+  --text1:#0d1b2a;--text2:#3a5270;--text3:#7a90a8;
+  --border:#ccd6e0;--radius:8px;--radius-sm:5px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--panel);color:var(--text1);font-size:13px}
+
+/* HEADER */
+.hdr{background:var(--navy);border-bottom:3px solid var(--amber);display:flex;align-items:stretch}
+.hdr-logo{background:var(--amber);padding:0 1.2rem;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--navy);letter-spacing:.07em;text-transform:uppercase;flex-shrink:0}
+.hdr-center{padding:.8rem 1.4rem;flex:1}
+.hdr-center h1{font-size:15px;font-weight:600;color:#fff}
+.hdr-center p{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* BOTÓN CALCULAR */
+.calc-bar{background:var(--navy2);border-bottom:2px solid var(--navy3);padding:.6rem 1.2rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn-calc{background:var(--amber);color:var(--navy);font-family:inherit;font-size:13px;font-weight:800;
+  letter-spacing:.07em;text-transform:uppercase;border:none;border-radius:6px;
+  padding:.55rem 2rem;cursor:pointer;display:flex;align-items:center;gap:8px;
+  box-shadow:0 2px 10px rgba(212,144,10,.5);transition:transform .1s,box-shadow .1s}
+.btn-calc:hover{box-shadow:0 4px 16px rgba(212,144,10,.7);transform:translateY(-1px)}
+.btn-calc:active{transform:translateY(0)}
+.btn-calc svg{width:16px;height:16px;flex-shrink:0}
+#calc-status{font-size:11px;font-style:italic;padding:.3rem .8rem;border-radius:4px}
+.status-ok  {background:rgba(22,122,64,.3);color:#80e8a0}
+.status-err {background:rgba(184,50,21,.3);color:#ff9090}
+.status-idle{color:rgba(255,255,255,.35)}
+.kbd-hint{font-size:10px;color:rgba(255,255,255,.25);margin-left:auto}
+
+/* SHARED SECTION */
+.shared{background:var(--navy2);border-bottom:2px solid var(--navy3);padding:.5rem 1.2rem .8rem}
+.sh-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.65);
+  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;padding:0;font-family:inherit;width:100%;text-align:left}
+.sh-toggle .arr{transition:transform .2s;font-size:12px;color:var(--amber)}
+.sh-open .arr{transform:rotate(180deg)}
+.sh-body{display:none;padding-top:.7rem}
+.sh-body.open{display:block}
+.sh-grid{display:grid;grid-template-columns:250px 1fr;gap:1rem;align-items:start}
+
+/* PARAMS BOX */
+.params-box{background:rgba(255,255,255,.06);border-radius:var(--radius);padding:.75rem .9rem;border:1px solid rgba(255,255,255,.1)}
+.p-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.4);margin-bottom:3px}
+.p-row{margin-bottom:.5rem}
+.p-inp{width:100%;padding:.35rem .6rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-radius:var(--radius-sm);color:#fff;font-family:'Consolas',monospace;font-size:13px;outline:none}
+.p-inp:focus{border-color:var(--amber)}
+.p-hint{font-size:10px;color:rgba(255,255,255,.28);margin-top:2px}
+.p-summary{margin-top:.7rem;border-top:1px solid rgba(255,255,255,.1);padding-top:.5rem;
+  font-size:10px;color:rgba(255,255,255,.35);line-height:1.8}
+.p-summary b{color:rgba(255,255,255,.55)}
+
+/* ACTIVITY TABLE */
+.act-wrap{overflow-x:auto}
+.act-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.act-tbl th{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;padding:5px 7px;text-align:left;white-space:nowrap}
+.act-tbl td{padding:4px 7px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.78);vertical-align:middle}
+.act-tbl tr:hover td{background:rgba(255,255,255,.03)}
+.atype{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.at-d{background:rgba(233,160,32,.2);color:#ffd580}
+.at-v{background:rgba(100,160,240,.2);color:#90c8ff}
+.at-m{background:rgba(80,200,120,.2);color:#80e8a0}
+.a-inp{width:64px;padding:.26rem .35rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:4px;color:#fff;font-family:'Consolas',monospace;font-size:12px;text-align:center;outline:none}
+.a-inp:focus{border-color:var(--amber)}
+.a-unit{font-size:10px;color:rgba(255,255,255,.3);margin-left:4px}
+.a-min{font-family:'Consolas',monospace;font-size:11px;color:rgba(255,255,255,.55);text-align:right}
+
+/* 3 SCENARIOS GRID */
+.scn-grid{max-width:1400px;margin:0 auto;padding:.9rem 1rem 2rem;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;align-items:start}
+
+/* SCENARIO COLUMN */
+.scn{border-radius:var(--radius);overflow:hidden;border:2px solid;box-shadow:0 2px 12px rgba(0,0,0,.13)}
+.scn-ideal{border-color:var(--blue-bd)}
+.scn-prop {border-color:var(--amber-bd)}
+.scn-efic {border-color:var(--green-bd)}
+.scn-head{padding:.6rem .9rem;display:flex;align-items:center;gap:10px}
+.scn-ideal .scn-head{background:var(--blue-dk)}
+.scn-prop  .scn-head{background:#7a5200}
+.scn-efic  .scn-head{background:var(--green-dk)}
+.scn-ico{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.scn-head h2{font-size:13px;font-weight:700;color:#fff}
+.scn-head p{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+.scn-body{background:var(--white)}
+.scn-sec{padding:.65rem .85rem;border-bottom:1px solid var(--border)}
+.scn-sec:last-child{border-bottom:none}
+.sec-ttl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.45rem}
+
+/* CLIENT TABLE */
+.cli-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.cli-tbl th{background:var(--panel);color:var(--text3);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;padding:4px 5px;text-align:center;border-bottom:1px solid var(--border)}
+.cli-tbl th:first-child{text-align:left;padding-left:4px}
+.cli-tbl td{padding:3px 4px;border-bottom:1px solid #eef1f5;text-align:center;vertical-align:middle}
+.cli-tbl td:first-child{text-align:left}
+.cli-tbl tfoot td{background:var(--panel);font-weight:700;border-top:1.5px solid var(--border);font-family:'Consolas',monospace}
+.cli-tbl tr:hover td{background:#f8fafc}
+.tag{font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;display:inline-block;white-space:nowrap}
+.tag-cg {background:var(--red-lt); color:var(--red)}
+.tag-cm {background:var(--amber-lt);color:var(--amber-dk)}
+.tag-cp {background:var(--blue-lt); color:var(--blue-dk)}
+.tag-cme{background:var(--green-lt);color:var(--green-dk)}
+.c-inp{width:44px;padding:.22rem .3rem;border:1.5px solid var(--border);border-radius:4px;
+  font-size:11px;font-family:'Consolas',monospace;text-align:center;color:var(--text1);
+  background:var(--panel);outline:none;transition:border-color .15s}
+.c-inp:focus{border-color:var(--blue);background:#fff}
+.scn-prop  .c-inp:focus{border-color:var(--amber)}
+.scn-efic  .c-inp:focus{border-color:var(--green)}
+.td-m{font-family:'Consolas',monospace;font-size:11px}
+.td-c{color:var(--text2)}
+
+/* MPV */
+.mpv-row{display:flex;align-items:center;gap:8px}
+.mpv-val{font-size:20px;font-weight:700;font-family:'Consolas',monospace}
+
+/* RESULT METRICS */
+.res2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
+.rm{border-radius:var(--radius-sm);padding:7px 9px;border:1px solid transparent}
+.rm .rl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.rm .rv{font-size:17px;font-weight:700;font-family:'Consolas',monospace;line-height:1}
+.rm .rs{font-size:9px;margin-top:2px;opacity:.7}
+.bg-navy{background:var(--navy);border-color:var(--navy3)}
+.bg-navy .rl{color:rgba(255,255,255,.45)}
+.bg-navy .rv{color:#fff}
+.bg-navy .rs{color:rgba(255,255,255,.4)}
+.bg-ideal{background:var(--blue-lt); border-color:var(--blue-bd)}
+.bg-ideal .rl,.bg-ideal .rs{color:var(--blue-dk)}
+.bg-ideal .rv{color:var(--blue-dk)}
+.bg-prop {background:var(--amber-lt);border-color:var(--amber-bd)}
+.bg-prop  .rl,.bg-prop  .rs{color:var(--amber-dk)}
+.bg-prop  .rv{color:var(--amber-dk)}
+.bg-efic {background:var(--green-lt);border-color:var(--green-bd)}
+.bg-efic  .rl,.bg-efic  .rs{color:var(--green-dk)}
+.bg-efic  .rv{color:var(--green-dk)}
+
+/* PROGRESS */
+.pg-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px}
+.pg-row b{color:var(--text1)}
+.pg-track{height:7px;background:var(--border);border-radius:20px;overflow:hidden;margin-bottom:4px}
+.pg-fill{height:100%;border-radius:20px;transition:width .35s,background .3s}
+.stk{height:12px;border-radius:5px;overflow:hidden;display:flex;margin:3px 0 2px}
+.stk div{height:100%;transition:flex .35s}
+.stk-leg{display:flex;gap:9px;flex-wrap:wrap;font-size:9px;color:var(--text3)}
+.dot{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:2px;vertical-align:middle}
+
+/* SUP BOX */
+.sup-box{border-radius:var(--radius);border:2px solid;padding:.65rem .85rem;
+  display:flex;align-items:center;gap:.65rem;margin-bottom:5px;transition:all .3s}
+.sup-box.ok  {background:var(--green-lt);border-color:var(--green-bd)}
+.sup-box.warn{background:var(--amber-lt);border-color:var(--amber-bd)}
+.sup-box.over{background:var(--red-lt);  border-color:#f0a090}
+.sup-num{font-size:36px;font-weight:800;font-family:'Consolas',monospace;line-height:1;flex-shrink:0}
+.sup-box.ok   .sup-num{color:var(--green-dk)}
+.sup-box.warn .sup-num{color:var(--amber-dk)}
+.sup-box.over .sup-num{color:var(--red)}
+.sup-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.sup-box.ok   .sup-lbl{color:var(--green-dk)}
+.sup-box.warn .sup-lbl{color:var(--amber-dk)}
+.sup-box.over .sup-lbl{color:var(--red)}
+.sup-rec{font-size:12px;font-weight:600;color:var(--text1)}
+.sup-st{font-size:10px;color:var(--text2);margin-top:1px}
+.cob-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px}
+.cob-row b{font-family:'Consolas',monospace}
+
+/* COMPARE */
+.cmp-wrap{max-width:1400px;margin:0 auto;padding:0 1rem 2rem}
+.cmp-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.07);padding:.8rem 1rem}
+.cmp-ttl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:.65rem}
+.cmp-h{position:relative;height:180px}
+
+/* FOOTER */
+.ftr{background:var(--navy);color:rgba(255,255,255,.3);text-align:center;
+  font-size:10px;padding:.65rem;border-top:2px solid var(--amber);letter-spacing:.03em}
+
+@media(max-width:1000px){
+  .scn-grid{grid-template-columns:1fr}
+  .sh-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    LIMTEK
+  </div>
+  <div class="hdr-center">
+    <h1>Calculadora de Carga Operativa — Supervisor Zonal</h1>
+    <p>Matriz de Evaluación de Tiempos · Análisis Comparativo de Escenarios · La Libertad</p>
+  </div>
+</header>
+
+<!-- BOTÓN CALCULAR -->
+<div class="calc-bar">
+  <button class="btn-calc" id="btn-calc" onclick="runCalc()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/>
+      <line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/>
+      <line x1="15" y1="17" x2="15" y2="23"/><line x1="12" y1="20" x2="18" y2="20"/>
+    </svg>
+    CALCULAR
+  </button>
+  <div id="calc-status" class="status-idle">Ingrese los datos y presione CALCULAR</div>
+  <span class="kbd-hint">Atajo: tecla Enter</span>
+</div>
+
+<!-- SHARED: PARÁMETROS + TIEMPOS -->
+<div class="shared">
+  <button class="sh-toggle sh-open" id="sh-btn" onclick="toggleSh()">
+    <span>⚙&nbsp; Parámetros Compartidos y Tabla de Tiempos Estándar (A1–A14)</span>
+    <span class="arr">▲</span>
+  </button>
+  <div class="sh-body open" id="sh-body">
+    <div class="sh-grid">
+
+      <!-- PARAMS -->
+      <div class="params-box">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.55rem">Parámetros base</div>
+        <div class="p-row"><div class="p-lbl">Días laborables / mes</div><input class="p-inp" type="number" id="dias" value="25" min="20" max="31"></div>
+        <div class="p-row"><div class="p-lbl">Horas por día</div><input class="p-inp" type="number" id="horas" value="8" min="6" max="12"></div>
+        <div class="p-row"><div class="p-lbl">Factor no productivo (%)</div><input class="p-inp" type="number" id="fnp" value="15" min="5" max="35"><div class="p-hint">Imprevistos, traslados no planificados, etc.</div></div>
+        <div class="p-summary" id="p-summary">—</div>
+      </div>
+
+      <!-- ACTIVITIES TABLE -->
+      <div class="act-wrap">
+        <table class="act-tbl">
+          <thead>
+            <tr>
+              <th>ID</th><th>Actividad / Función</th><th>Tipo</th>
+              <th>T. Estándar</th><th>Unidad</th><th style="text-align:right">Min./Mes</th>
+            </tr>
+          </thead>
+          <tbody id="act-tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" style="font-size:9px;color:rgba(255,255,255,.3);font-style:italic;padding:4px 7px">
+                * Min./Mes calculados para actividades diarias y fijas (actividades por visita dependen del escenario)
+              </td>
+              <td class="a-min" style="color:#ffd580;font-weight:700;padding:4px 7px" id="act-total">—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 3 COLUMNAS DE ESCENARIOS -->
+<div class="scn-grid">
+
+  <!-- ESCENARIO IDEAL -->
+  <div class="scn scn-ideal" id="col-ideal">
+    <div class="scn-head">
+      <div class="scn-ico">🎯</div>
+      <div><h2>Escenario Ideal</h2><p>Cobertura total · Frecuencia óptima</p></div>
+    </div>
+    <div class="scn-body">
+      <div class="scn-sec">
+        <div class="sec-ttl">Cartera de Clientes</div>
+        <table class="cli-tbl">
+          <thead><tr><th>Tipo</th><th># Cli.</th><th>% Unid.</th><th>Unid.</th><th>Frec./mes</th><th>Vis./mes</th></tr></thead>
+          <tbody id="ct-ideal"></tbody>
+          <tfoot><tr id="cf-ideal"><td colspan="3" style="text-align:left;font-size:9px;color:var(--text3);padding-left:4px">TOTAL</td><td id="cfu-ideal" class="td-m">—</td><td></td><td id="cfv-ideal" class="td-m">—</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="scn-sec"><div class="sec-ttl">Min. por visita (A3+A4+A5+A6)</div><div class="mpv-row"><div class="mpv-val" id="mpv-ideal" style="color:var(--blue-dk)">—</div><div style="font-size:10px;color:var(--text3)">min/visita</div></div></div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Capacidad</div>
+        <div class="res2">
+          <div class="rm bg-navy"><div class="rl">Carga Total</div><div class="rv" id="rc-ideal">—</div><div class="rs">min/mes</div></div>
+          <div class="rm bg-ideal"><div class="rl">Visitas/mes</div><div class="rv" id="rv-ideal">—</div><div class="rs">visitas</div></div>
+          <div class="rm bg-ideal"><div class="rl">T. Visitas</div><div class="rv" id="rtv-ideal">—</div><div class="rs">min</div></div>
+          <div class="rm bg-ideal"><div class="rl">T. Admin</div><div class="rv" id="rta-ideal">—</div><div class="rs">min</div></div>
+        </div>
+        <div class="pg-row"><span>Utilización</span><b id="ru-ideal">—</b></div>
+        <div class="pg-track"><div class="pg-fill" id="rp-ideal" style="width:0%"></div></div>
+        <div class="stk" id="stk-ideal"></div>
+        <div class="stk-leg"><span><span class="dot" style="background:var(--blue)"></span>Visitas</span><span><span class="dot" style="background:#1760b888"></span>Admin</span><span><span class="dot" style="background:var(--border)"></span>Libre</span></div>
+      </div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Dimensionamiento</div>
+        <div class="sup-box ok" id="sb-ideal"><div class="sup-num" id="sn-ideal">—</div><div><div class="sup-lbl">Supervisores</div><div class="sup-rec" id="sr-ideal">—</div><div class="sup-st" id="ss-ideal">—</div></div></div>
+        <div class="cob-row"><span>Cobertura operativa</span><b id="scb-ideal">—</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCENARIO PROPUESTO -->
+  <div class="scn scn-prop" id="col-prop">
+    <div class="scn-head">
+      <div class="scn-ico">📋</div>
+      <div><h2>Escenario Propuesto</h2><p>Cobertura actual · Porcentajes reales</p></div>
+    </div>
+    <div class="scn-body">
+      <div class="scn-sec">
+        <div class="sec-ttl">Cartera de Clientes</div>
+        <table class="cli-tbl">
+          <thead><tr><th>Tipo</th><th># Cli.</th><th>% Unid.</th><th>Unid.</th><th>Frec./mes</th><th>Vis./mes</th></tr></thead>
+          <tbody id="ct-prop"></tbody>
+          <tfoot><tr id="cf-prop"><td colspan="3" style="text-align:left;font-size:9px;color:var(--text3);padding-left:4px">TOTAL</td><td id="cfu-prop" class="td-m">—</td><td></td><td id="cfv-prop" class="td-m">—</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="scn-sec"><div class="sec-ttl">Min. por visita (A3+A4+A5+A6)</div><div class="mpv-row"><div class="mpv-val" id="mpv-prop" style="color:var(--amber-dk)">—</div><div style="font-size:10px;color:var(--text3)">min/visita</div></div></div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Capacidad</div>
+        <div class="res2">
+          <div class="rm bg-navy"><div class="rl">Carga Total</div><div class="rv" id="rc-prop">—</div><div class="rs">min/mes</div></div>
+          <div class="rm bg-prop"><div class="rl">Visitas/mes</div><div class="rv" id="rv-prop">—</div><div class="rs">visitas</div></div>
+          <div class="rm bg-prop"><div class="rl">T. Visitas</div><div class="rv" id="rtv-prop">—</div><div class="rs">min</div></div>
+          <div class="rm bg-prop"><div class="rl">T. Admin</div><div class="rv" id="rta-prop">—</div><div class="rs">min</div></div>
+        </div>
+        <div class="pg-row"><span>Utilización</span><b id="ru-prop">—</b></div>
+        <div class="pg-track"><div class="pg-fill" id="rp-prop" style="width:0%"></div></div>
+        <div class="stk" id="stk-prop"></div>
+        <div class="stk-leg"><span><span class="dot" style="background:var(--amber)"></span>Visitas</span><span><span class="dot" style="background:#d4900a88"></span>Admin</span><span><span class="dot" style="background:var(--border)"></span>Libre</span></div>
+      </div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Dimensionamiento</div>
+        <div class="sup-box ok" id="sb-prop"><div class="sup-num" id="sn-prop">—</div><div><div class="sup-lbl">Supervisores</div><div class="sup-rec" id="sr-prop">—</div><div class="sup-st" id="ss-prop">—</div></div></div>
+        <div class="cob-row"><span>Cobertura operativa</span><b id="scb-prop">—</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCENARIO EFICIENTE -->
+  <div class="scn scn-efic" id="col-efic">
+    <div class="scn-head">
+      <div class="scn-ico">⚡</div>
+      <div><h2>Escenario Eficiente</h2><p>Optimización de recursos · Balance carga</p></div>
+    </div>
+    <div class="scn-body">
+      <div class="scn-sec">
+        <div class="sec-ttl">Cartera de Clientes</div>
+        <table class="cli-tbl">
+          <thead><tr><th>Tipo</th><th># Cli.</th><th>% Unid.</th><th>Unid.</th><th>Frec./mes</th><th>Vis./mes</th></tr></thead>
+          <tbody id="ct-efic"></tbody>
+          <tfoot><tr id="cf-efic"><td colspan="3" style="text-align:left;font-size:9px;color:var(--text3);padding-left:4px">TOTAL</td><td id="cfu-efic" class="td-m">—</td><td></td><td id="cfv-efic" class="td-m">—</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="scn-sec"><div class="sec-ttl">Min. por visita (A3+A4+A5+A6)</div><div class="mpv-row"><div class="mpv-val" id="mpv-efic" style="color:var(--green-dk)">—</div><div style="font-size:10px;color:var(--text3)">min/visita</div></div></div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Capacidad</div>
+        <div class="res2">
+          <div class="rm bg-navy"><div class="rl">Carga Total</div><div class="rv" id="rc-efic">—</div><div class="rs">min/mes</div></div>
+          <div class="rm bg-efic"><div class="rl">Visitas/mes</div><div class="rv" id="rv-efic">—</div><div class="rs">visitas</div></div>
+          <div class="rm bg-efic"><div class="rl">T. Visitas</div><div class="rv" id="rtv-efic">—</div><div class="rs">min</div></div>
+          <div class="rm bg-efic"><div class="rl">T. Admin</div><div class="rv" id="rta-efic">—</div><div class="rs">min</div></div>
+        </div>
+        <div class="pg-row"><span>Utilización</span><b id="ru-efic">—</b></div>
+        <div class="pg-track"><div class="pg-fill" id="rp-efic" style="width:0%"></div></div>
+        <div class="stk" id="stk-efic"></div>
+        <div class="stk-leg"><span><span class="dot" style="background:var(--green)"></span>Visitas</span><span><span class="dot" style="background:var(--green-dk)"></span>Admin</span><span><span class="dot" style="background:var(--border)"></span>Libre</span></div>
+      </div>
+      <div class="scn-sec">
+        <div class="sec-ttl">Dimensionamiento</div>
+        <div class="sup-box ok" id="sb-efic"><div class="sup-num" id="sn-efic">—</div><div><div class="sup-lbl">Supervisores</div><div class="sup-rec" id="sr-efic">—</div><div class="sup-st" id="ss-efic">—</div></div></div>
+        <div class="cob-row"><span>Cobertura operativa</span><b id="scb-efic">—</b></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /scn-grid -->
+
+<!-- GRÁFICO COMPARATIVO -->
+<div class="cmp-wrap">
+  <div class="cmp-card">
+    <div class="cmp-ttl">📊 Comparativo de Escenarios — Supervisores requeridos vs. Carga operativa</div>
+    <div class="cmp-h"><canvas id="cmpChart"></canvas></div>
+  </div>
+</div>
+
+<footer class="ftr">Calculadora de Carga Operativa · Supervisor Zonal · LIMTEK · La Libertad &nbsp;·&nbsp; Gerencia de Operaciones</footer>
+
+<script>
+// ── DATOS BASE ─────────────────────────────────────────────────────────────────
+var ACTS = [
+  {id:'a1', name:'Gestión de Asistencia (correos, coordinación, WhatsApp)',       tipo:'D', unit:'min/día',    def:60},
+  {id:'a2', name:'Reporte de Novedades Diarias (Faltos, DM, Licencias – APP)',    tipo:'D', unit:'min/día',    def:40},
+  {id:'a3', name:'Inspección de Sede (33 preguntas APP)',                         tipo:'V', unit:'min/visita', def:80},
+  {id:'a4', name:'Reuniones con Colaborador / Cliente (Feedback + Calidad)',      tipo:'V', unit:'min/visita', def:40},
+  {id:'a5', name:'Charla de 5 Minutos (inicio de turno)',                        tipo:'V', unit:'min/visita', def:10},
+  {id:'a6', name:'Traslado / Desplazamiento entre sedes',                        tipo:'V', unit:'min/visita', def:90},
+  {id:'a7', name:'Capacitaciones Específicas (técnicas + inducción)',            tipo:'M', unit:'min/mes',    def:60},
+  {id:'a8', name:'Coordinación Logística (abastecimiento, RRLL, compras)',       tipo:'M', unit:'min/mes',    def:60},
+  {id:'a9', name:'Capacitaciones PAC / Boletines / SSOMAC',                     tipo:'M', unit:'min/mes',    def:240},
+  {id:'a10',name:'Levantamiento de Observaciones SSOMAC',                        tipo:'M', unit:'min/mes',    def:25},
+  {id:'a11',name:'Gestión de Contratos (presentación, firma, envío)',            tipo:'M', unit:'min/mes',    def:120},
+  {id:'a12',name:'Reportes Operativos (planes, documentación, programas)',       tipo:'M', unit:'min/mes',    def:750},
+  {id:'a13',name:'Evaluaciones Nuevos Clientes (levantamiento + análisis)',      tipo:'M', unit:'min/mes',    def:120},
+  {id:'a14',name:'Gestión de Altas (reclutamiento, selección, fotocheck)',       tipo:'D', unit:'min/día',    def:15}
+];
+
+var CLIENTS = [
+  {id:'cg',  lbl:'CG',  name:'Clientes Grandes',  cls:'tag-cg',  dfreq:4},
+  {id:'cm',  lbl:'CM',  name:'Clientes Medianos', cls:'tag-cm',  dfreq:3},
+  {id:'cp',  lbl:'CP',  name:'Clientes Pequeños', cls:'tag-cp',  dfreq:2},
+  {id:'cme', lbl:'Cm',  name:'Clientes Menores',  cls:'tag-cme', dfreq:1}
+];
+
+// [count, %unidades, frecuencia]
+var DEFAULTS = {
+  ideal: {cg:[15,100,4], cm:[6,100,3],  cp:[11,100,2], cme:[2,100,1]},
+  prop:  {cg:[15,100,4], cm:[6,51,2],   cp:[11,30,1],  cme:[2,50,0.5]},
+  efic:  {cg:[15,100,4], cm:[6,75,3],   cp:[11,55,2],  cme:[2,25,1]}
+};
+
+var SCENS = ['ideal','prop','efic'];
+var cmpChart = null;
+
+// ── HELPERS ────────────────────────────────────────────────────────────────────
+function gv(id) {
+  var el = document.getElementById(id);
+  if (!el) return 0;
+  var v = parseFloat(el.value);
+  return isNaN(v) ? 0 : v;
+}
+function sv(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function f0(n) { return n.toLocaleString('es-PE', {minimumFractionDigits:0, maximumFractionDigits:0}); }
+function f1(n) { return n.toLocaleString('es-PE', {minimumFractionDigits:1, maximumFractionDigits:1}); }
+function f2(n) { return n.toLocaleString('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+// ── BUILD ACTIVITY TABLE ────────────────────────────────────────────────────────
+function buildActTable() {
+  var tb = document.getElementById('act-tbody');
+  var html = '';
+  var typeLbl = {D:'DIARIA', V:'POR VISITA', M:'MENSUAL'};
+  var typeCls  = {D:'at-d', V:'at-v', M:'at-m'};
+  for (var i = 0; i < ACTS.length; i++) {
+    var a = ACTS[i];
+    html += '<tr>';
+    html += '<td style="font-family:Consolas,monospace;font-size:10px;color:#ffd580;font-weight:700">' + a.id.toUpperCase() + '</td>';
+    html += '<td style="max-width:260px;line-height:1.3">' + a.name + '</td>';
+    html += '<td><span class="atype ' + typeCls[a.tipo] + '">' + typeLbl[a.tipo] + '</span></td>';
+    html += '<td><input class="a-inp" type="number" id="' + a.id + '" value="' + a.def + '" min="0"></td>';
+    html += '<td><span class="a-unit">' + a.unit + '</span></td>';
+    html += '<td class="a-min" id="am-' + a.id + '">—</td>';
+    html += '</tr>';
+  }
+  tb.innerHTML = html;
+}
+
+// ── BUILD CLIENT TABLE PER SCENARIO ────────────────────────────────────────────
+function buildCliTable(scn) {
+  var tb = document.getElementById('ct-' + scn);
+  var defs = DEFAULTS[scn];
+  var html = '';
+  for (var i = 0; i < CLIENTS.length; i++) {
+    var c = CLIENTS[i];
+    var d = defs[c.id];
+    html += '<tr>';
+    html += '<td><span class="tag ' + c.cls + '">' + c.lbl + '</span></td>';
+    html += '<td><input class="c-inp" type="number" id="' + scn + '_n_' + c.id + '" value="' + d[0] + '" min="0" max="999"></td>';
+    html += '<td><input class="c-inp" type="number" id="' + scn + '_p_' + c.id + '" value="' + d[1] + '" min="0" max="100"></td>';
+    html += '<td class="td-m td-c" id="' + scn + '_u_' + c.id + '">—</td>';
+    html += '<td><input class="c-inp" type="number" id="' + scn + '_f_' + c.id + '" value="' + d[2] + '" min="0" max="31" step="0.5"></td>';
+    html += '<td class="td-m td-c" id="' + scn + '_v_' + c.id + '">—</td>';
+    html += '</tr>';
+  }
+  tb.innerHTML = html;
+}
+
+// ── MAIN CALCULATION ────────────────────────────────────────────────────────────
+function runCalc() {
+  var btn = document.getElementById('btn-calc');
+  var statusEl = document.getElementById('calc-status');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  statusEl.className = 'status-idle';
+  statusEl.textContent = 'Calculando...';
+
+  try {
+    doCalc();
+    statusEl.className = 'status-ok';
+    statusEl.textContent = '✓ Cálculo completado correctamente';
+  } catch(e) {
+    statusEl.className = 'status-err';
+    statusEl.textContent = '✗ Error: ' + e.message;
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.style.opacity = '1';
+}
+
+function doCalc() {
+  var dias  = gv('dias');
+  var horas = gv('horas');
+  var fnp   = gv('fnp') / 100;
+
+  // Read activity times
+  var at = {};
+  for (var i = 0; i < ACTS.length; i++) {
+    at[ACTS[i].id] = gv(ACTS[i].id);
+  }
+
+  var bruta   = dias * horas * 60;
+  var efectiva= bruta * (1 - fnp);
+  var adminD  = (at.a1 + at.a2 + at.a14) * dias;
+  var adminM  = at.a7 + at.a8 + at.a9 + at.a10 + at.a11 + at.a12 + at.a13;
+  var adminTot= adminD + adminM;
+  var dispVis = bruta - adminTot;
+  var mpv     = at.a3 + at.a4 + at.a5 + at.a6;
+
+  // Update params summary
+  var sumHtml = '<b>Cap. Bruta:</b> ' + f0(bruta) + ' min/mes<br>'
+    + '<b>Cap. Efectiva (–FNP):</b> ' + f0(efectiva) + ' min/mes<br>'
+    + '<b>Admin Overhead:</b> ' + f0(adminTot) + ' min/mes<br>'
+    + '<b>Disp. p/Visitas (1 sup.):</b> ' + f0(Math.max(dispVis,0)) + ' min/mes';
+  document.getElementById('p-summary').innerHTML = sumHtml;
+
+  // Update activity min/mes column
+  var nonVisTot = 0;
+  for (var j = 0; j < ACTS.length; j++) {
+    var a = ACTS[j];
+    var el = document.getElementById('am-' + a.id);
+    if (!el) continue;
+    if (a.tipo === 'D') {
+      var m = at[a.id] * dias;
+      nonVisTot += m;
+      el.textContent = f0(m) + ' min';
+    } else if (a.tipo === 'M') {
+      nonVisTot += at[a.id];
+      el.textContent = f0(at[a.id]) + ' min';
+    } else {
+      el.textContent = '× visitas';
+    }
+  }
+  sv('act-total', f0(nonVisTot) + ' min');
+
+  // Calculate each scenario
+  var cmpSups = [];
+  var cmpLoads = [];
+
+  for (var s = 0; s < SCENS.length; s++) {
+    var scn = SCENS[s];
+    var totalV = 0;
+    var totalU = 0;
+
+    for (var k = 0; k < CLIENTS.length; k++) {
+      var c = CLIENTS[k];
+      var n    = gv(scn + '_n_' + c.id);
+      var pct  = gv(scn + '_p_' + c.id) / 100;
+      var freq = gv(scn + '_f_' + c.id);
+      var units = n * pct;
+      var visits= units * freq;
+      totalU += units;
+      totalV += visits;
+      sv(scn + '_u_' + c.id, f2(units));
+      sv(scn + '_v_' + c.id, f2(visits));
+    }
+
+    sv('cfu-' + scn, f2(totalU));
+    sv('cfv-' + scn, f2(totalV));
+
+    var visitMin  = totalV * mpv;
+    var totalCarga= adminTot + visitMin;
+    var utilPct   = bruta > 0 ? (totalCarga / bruta) * 100 : 0;
+    var sups      = dispVis > 0 ? visitMin / dispVis : 0;
+    var supsCeil  = Math.ceil(sups * 100) / 100; // keep 2 decimals for display
+    var supsInt   = Math.ceil(sups);
+    var maxVis    = (mpv > 0 && dispVis > 0) ? dispVis / mpv : 0;
+    var cobPct    = maxVis > 0 ? Math.min((totalV / maxVis) * 100, 100) : (totalV === 0 ? 100 : 0);
+
+    cmpSups.push(parseFloat(sups.toFixed(2)));
+    cmpLoads.push(Math.round(totalCarga));
+
+    // MPV
+    sv('mpv-' + scn, f0(mpv));
+
+    // Metrics
+    sv('rc-'  + scn, f0(totalCarga));
+    sv('rv-'  + scn, f1(totalV));
+    sv('rtv-' + scn, f0(visitMin));
+    sv('rta-' + scn, f0(adminTot));
+
+    // Progress bar
+    var bw = Math.min(utilPct, 100);
+    var pg = document.getElementById('rp-' + scn);
+    pg.style.width = bw.toFixed(1) + '%';
+    pg.style.background = utilPct < 75 ? '#167a40' : utilPct < 100 ? '#d4900a' : '#b83215';
+    sv('ru-' + scn, f1(utilPct) + '%');
+
+    // Stacked bar
+    var stkEl = document.getElementById('stk-' + scn);
+    var vp = bruta > 0 ? Math.min(visitMin / bruta * 100, 100) : 0;
+    var ap = bruta > 0 ? Math.min(adminTot / bruta * 100, 100) : 0;
+    var fp = Math.max(100 - vp - ap, 0);
+    var vc, ac, fc;
+    if (scn === 'ideal') {
+      vc = 'var(--blue)'; ac = '#1760b888'; fc = 'var(--border)';
+    } else if (scn === 'prop') {
+      vc = 'var(--amber)'; ac = '#d4900a88'; fc = 'var(--border)';
+    } else {
+      vc = 'var(--green)'; ac = 'var(--green-dk)'; fc = 'var(--border)';
+    }
+    stkEl.innerHTML = '<div style="flex:' + vp.toFixed(1) + ';background:' + vc + '"></div>'
+      + '<div style="flex:' + ap.toFixed(1) + ';background:' + ac + '"></div>'
+      + '<div style="flex:' + fp.toFixed(1) + ';background:' + fc + '"></div>';
+
+    // Supervisor box
+    var box = document.getElementById('sb-' + scn);
+    sv('sn-' + scn, sups.toFixed(2));
+    box.className = 'sup-box ' + (sups <= 1 ? 'ok' : sups <= 1.7 ? 'warn' : 'over');
+    sv('sr-' + scn, '→ Contratar ' + supsInt + ' supervisor' + (supsInt !== 1 ? 'es' : ''));
+    var st = sups <= 1    ? '✓ Capacidad suficiente con 1 supervisor' :
+             sups <= 1.5  ? '⚠ Carga elevada — evaluar apoyo puntual' :
+             sups <= 2    ? '⚠ Sobrecarga — se requiere refuerzo urgente' :
+                            '✗ Sobrecarga crítica — acción inmediata';
+    sv('ss-' + scn, st);
+    sv('scb-' + scn, f1(cobPct) + '%');
+  }
+
+  // Comparison chart
+  updateCmpChart(cmpSups, cmpLoads);
+}
+
+// ── COMPARISON CHART ────────────────────────────────────────────────────────────
+function updateCmpChart(sups, loads) {
+  if (cmpChart) { cmpChart.destroy(); cmpChart = null; }
+  cmpChart = new Chart(document.getElementById('cmpChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Escenario Ideal', 'Escenario Propuesto', 'Escenario Eficiente'],
+      datasets: [
+        {
+          label: 'Supervisores requeridos',
+          data: sups,
+          backgroundColor: ['rgba(23,96,184,.25)','rgba(212,144,10,.25)','rgba(22,122,64,.25)'],
+          borderColor: ['#1760b8','#d4900a','#167a40'],
+          borderWidth: 2, borderRadius: 5, yAxisID: 'y'
+        },
+        {
+          label: 'Carga total (min/mes)',
+          data: loads,
+          backgroundColor: ['rgba(23,96,184,.1)','rgba(212,144,10,.1)','rgba(22,122,64,.1)'],
+          borderColor: ['#1760b844','#d4900a44','#167a4044'],
+          borderWidth: 1, borderRadius: 5, yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {display:true, labels:{font:{size:11}, color:'#3a5270', boxWidth:12, padding:14}},
+        tooltip: {callbacks:{label:function(c){return c.datasetIndex===0 ? ' '+c.raw.toFixed(2)+' supervisores' : ' '+c.raw.toLocaleString('es-PE')+' min/mes';}}}
+      },
+      scales: {
+        y:  {position:'left',  title:{display:true,text:'Supervisores',  color:'#7a90a8',font:{size:10}}, min:0, grid:{color:'rgba(0,0,0,.06)'}, ticks:{color:'#3a5270',font:{size:10}}},
+        y2: {position:'right', title:{display:true,text:'Carga (min/mes)',color:'#7a90a8',font:{size:10}}, min:0, grid:{display:false},           ticks:{color:'#3a5270',font:{size:10},callback:function(v){return v.toLocaleString('es-PE');}}}
+      }
+    }
+  });
+}
+
+// ── TOGGLE SHARED PANEL ─────────────────────────────────────────────────────────
+function toggleSh() {
+  var body = document.getElementById('sh-body');
+  var btn  = document.getElementById('sh-btn');
+  var open = body.classList.toggle('open');
+  btn.classList.toggle('sh-open', open);
+  btn.querySelector('.arr').textContent = open ? '▲' : '▼';
+}
+
+// ── ENTER KEY ───────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); runCalc(); }
+});
+
+// ── INIT ────────────────────────────────────────────────────────────────────────
+buildActTable();
+SCENS.forEach(function(s){ buildCliTable(s); });
+runCalc();
+</script>
+</body>
+</html>
